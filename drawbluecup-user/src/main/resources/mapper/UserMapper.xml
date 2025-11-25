@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间：必须等于UserMapper接口的全类名（绑定接口） -->
+<mapper namespace="com.drawbluecup.mapper.UserMapper">
+
+    <select
+            id="findAll"
+            resultType="com.drawbluecup.entity.User"
+    >
+        <!--查询所有用户-->
+        SELECT id, name, phone,create_time,update_time FROM user
+
+    </select>
+
+
+    <select
+            id="findById"
+            resultType="com.drawbluecup.entity.User"
+    >
+        <!--根据id查询用户-->
+        SELECT id, name, phone,create_time,update_time FROM user where id = #{id}
+    </select>
+
+
+    <select
+            id="findByPhone"
+            resultType="com.drawbluecup.entity.User"
+    >
+        <!--根据phone查询用户-->
+        SELECT id, name, phone,create_time,update_time FROM user where phone = #{phone}
+    </select>
+
+
+    <!--
+        动态SQL查询：根据传入的条件（name、phone）动态拼接WHERE子句
+        核心逻辑：只有参数不为空时，才会拼接对应的查询条件
+     -->
+
+
+    <select
+            id="queryUserByCondition"
+            resultType="com.drawbluecup.entity.User"
+    >
+        SELECT * FROM user
+        <where>
+            <!-- where标签：自动处理多余的AND，避免“WHERE AND ...”的语法错误 -->
+            <if test="name != null and name.trim() != ''">
+                <!--if test这里的name是传参的name,检验传入的name是否为空-->
+                AND name like CONCAT('%' , #{name} , '%' )
+            </if>
+            <if test="phone != null and phone.trim() != ''">
+                AND phone like CONCAT('%' , #{phone} , '%' )
+            </if>
+            <if test="createTime != null ">
+                AND DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')
+
+            </if>
+            <if test="updateTime != null ">
+                AND DATE_FORMAT(update_time, '%Y-%m-%d') = DATE_FORMAT(#{updateTime}, '%Y-%m-%d')
+
+            </if>
+        </where>
+        ORDER BY id DESC <!-- 按ID倒序，确保最新数据在前 -->
+
+    </select>
+
+    <!--DATE_FORMAT 是 MySQL 的日期格式化函数，用于将日期类型的数据转换成指定格式的字符串，方便做模糊时间匹配。-->
+    <!--DATE_FORMAT(create_time, '%Y-%m-%d') 的意思是：把数据库中 create_time 字段的日期，格式化为 “年 - 月 - 日” 的字符串（比如 2025-10-30）-->
+    <!--DATE_FORMAT(#{createTime}, '%Y-%m-%d') 的意思是：把前端传入的 createTime 参数（比如 2025-10-30T12:00:00），也格式化为 “年 - 月 - 日” 的字符串。-->
+    <!--两者相等时，就表示 “数据库中 create_time 的日期部分和前端传入的 createTime 日期部分一致”，从而实现按天模糊查询（不管具体时间，只要日期相同就匹配）。-->
+
+
+
+    <insert
+            id="add"
+            parameterType="com.drawbluecup.entity.User"
+    >
+        <!--新增用户-->
+        INSERT INTO user (name, phone,create_time,update_time) values (#{name}, #{phone},NOW(), NOW())
+    </insert>
+
+
+    <delete
+            id="delete"
+    >
+        <!--根据id删除用户-->
+        delete from user where id = #{id}
+    </delete>
+
+    <delete
+            id="deleteUserAll"
+    >
+        <!--删除所有用户,但首先要先删除关联表(例如订单表)-->
+        delete from user
+    </delete>
+
+
+
+
+    <update
+            id="update"
+            parameterType="com.drawbluecup.entity.User"
+    >
+        <!--更新用户-->
+        update user set name=#{name},phone=#{phone},update_time=NOW()  where id = #{id}
+    </update>
+
+
+
+
+
+
+</mapper>
+

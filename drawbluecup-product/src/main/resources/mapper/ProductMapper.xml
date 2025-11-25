@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间：必须等于ProductMapper接口的全类名（绑定接口） -->
+<mapper namespace="com.drawbluecup.mapper.ProductMapper">
+
+    <select
+            id="findAll"
+            resultType="com.drawbluecup.entity.Product"
+    >
+        <!--查询所有商品信息-->
+        SELECT * FROM product
+
+    </select>
+
+
+    <select
+            id="findById"
+            resultType="com.drawbluecup.entity.Product"
+            parameterType="java.lang.Integer"
+    >
+        <!--根据id查询商品-->
+        SELECT id, name FROM product where id = #{id}
+    </select>
+
+
+    <select
+            id="findByName"
+            resultType="com.drawbluecup.entity.Product"
+            parameterType="java.lang.String"
+    >
+        <!--根据name查询商品(支持模糊)-->
+        SELECT id, name FROM product where name LIKE CONCAT('%', #{name}, '%')
+    </select>
+
+
+
+
+    <insert
+            id="add"
+            parameterType="com.drawbluecup.entity.Product"
+    >
+        <!--新增商品-->
+        INSERT INTO product (name) values (#{name})
+    </insert>
+
+
+    <delete
+            id="deleteById"
+            parameterType="java.lang.Integer"
+    >
+        <!--根据id删除商品-->
+        delete from product where id = #{id}
+    </delete>
+
+    <delete
+            id="deleteAll"
+    >
+        <!--删除所有商品,但首先要先删除关联表(例如订单表)-->
+        delete from product
+    </delete>
+
+
+
+
+    <update
+            id="update"
+            parameterType="com.drawbluecup.entity.Product"
+    >
+        <!--更新商品(本质基于查询)-->
+        update product set name=#{name}  where id = #{id}
+    </update>
+
+
+
+
+
+
+</mapper>
+
