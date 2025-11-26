@@ -4,7 +4,7 @@ public class Result<T> {//给控制端作**返回对象**,从前端接收路径�
 
 
     //成员变量
-    private int code;//给前端状态码：200=成功，400=参数错误，500=服务器错误
+    private int code;
     private String msg;//提示信息
     private T data;//给前端的业务数据（查询/新增/修改后的实际数据，无数据时为null）// T是泛型，适配不同类型数据
 
