@@ -1,5 +1,11 @@
 # DrawBlueCup 接口文档
 
+docs是项目中常用的 **“文档 / 示例文件目录”**
+
+
+保持项目结构整洁：
+把 “文档 / 示例类文件” 集中放在docs里，
+和src（业务代码）分开，后期维护时更容易找。
 > 通过 `http://localhost:8080/swagger-ui/index.html` 可以查看实时在线文档（SpringDoc 自动生成）。
 
 ## 统一响应

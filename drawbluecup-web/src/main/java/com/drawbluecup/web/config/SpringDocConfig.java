@@ -22,3 +22,6 @@ public class SpringDocConfig {
                                 .url("项目地址")));
     }
 }
+
+
+//配置 Swagger/API 文档 的（就是你之前看到的在线接口文档）
