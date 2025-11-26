@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
         String message = "系统异常，请联系管理员";
         // 开发环境可以打印日志方便调试//既然不暴露,那么就要打印日志方便维护
         e.printStackTrace();
-        return Result.fail(500000,message);
+        return Result.fail(500,message);
     }
 
 
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
     public Result<Void> handleException(Exception e) {
         String message = "系统繁忙，请联系管理员";
         e.printStackTrace(); // 开发环境打印日志
-        return Result.fail(500000,message);
+        return Result.fail(500,message);
     }
 
     /**

@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/findAll")  // 接收 GET 请求，子路径是 /findAll
     public Result<List<User>> findUserAll() {
         // 调用 Service 的 findAll() 方法，获取结果并返回给前端
-        return Result.success("查询成功",userService.findAll());
+        return Result.success(200,"查询成功",userService.findAll());
         //return userService.findAll();
 
     }
@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/findById/{id}")
     public Result<User> findById(@PathVariable Integer id){
 
-            return Result.success("查询成功",userService.findById(id));
+            return Result.success(200,"查询成功",userService.findById(id));
             //return "查询成功"+userService.findById(id);
 
     }
@@ -74,7 +74,7 @@ public class UserController {
     //示例:http://localhost:8080/api/user/findByPhone/{phone}
     @GetMapping("/findByPhone/{phone}")
     public Result<User> findByPhone(@PathVariable @Phone String phone){
-            return Result.success("查询成功",userService.findByPhone(phone));
+            return Result.success(200,"查询成功",userService.findByPhone(phone));
 
     }
 
@@ -97,7 +97,7 @@ public class UserController {
             @RequestParam(required = false) Integer pageSize
     )
     {
-        return Result.success("用户条件查询成功", userService.queryUserByCondition(name, phone, createTime ,updateTime ,pageNum, pageSize));
+        return Result.success(200,"用户条件查询成功", userService.queryUserByCondition(name, phone, createTime ,updateTime ,pageNum, pageSize));
     }
 //success 是静态方法，不需要创建类的实例就能调用
 
@@ -122,7 +122,7 @@ public class UserController {
     public Result<Void> addUser (@Valid @RequestBody User user)
     {
             userService.addUser(user);
-            return Result.success("新增该用户成功",null);
+            return Result.success(201,"新增该用户成功",null);
 
     }
 
@@ -144,7 +144,7 @@ public class UserController {
     {
 
             userService.updateUser(user);
-            return Result.success("修改该用户成功",null);
+            return Result.success(200,"修改该用户成功",null);
 
     }
 
@@ -164,7 +164,7 @@ public class UserController {
     public Result<Void> deleteUser(@PathVariable Integer id)
     {
             userService.deleteUser(id);
-            return Result.success("删除该用户成功",null);
+            return Result.success(200,"删除该用户成功",null);
 
     }
 
@@ -179,7 +179,7 @@ public class UserController {
     {
 
             userService.deleteUserAll();
-            return Result.success("删除所有用户成功",null);
+            return Result.success(200,"删除所有用户成功",null);
 
     }
 

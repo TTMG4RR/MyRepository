@@ -33,7 +33,7 @@ public class ProductController {
      */
     @GetMapping("/findAll")
     public Result<List<Product>> findAll(){
-    return Result.success(200003,"查询成功" , productService.findAll());
+    return Result.success(200,"查询成功" , productService.findAll());
     }
 
     /*
@@ -44,7 +44,7 @@ public class ProductController {
      */
     @GetMapping("/findById/{id}")
     public Result<Product> findById(@PathVariable Integer id){
-        return Result.success(200003,"查询成功" , productService.findById(id));
+        return Result.success(200,"查询成功" , productService.findById(id));
     }
 
     /*
@@ -55,7 +55,7 @@ public class ProductController {
      */
     @GetMapping("/findByName/{name}")
     public Result<Product> findByName(@PathVariable String name){
-        return Result.success(200003,"查询成功" , productService.findByName(name));
+        return Result.success(200,"查询成功" , productService.findByName(name));
     }
 
     /*
@@ -67,7 +67,7 @@ public class ProductController {
     @DeleteMapping("/deleteAll")
     public Result<Void> deleteAll(){
         productService.deleteAll();//不能写在下面,因为不返回值
-        return Result.success(200003,"删除所有商品成功",null);
+        return Result.success(200,"删除所有商品成功",null);
     }
 
     /*
@@ -79,7 +79,7 @@ public class ProductController {
     @DeleteMapping("/deleteById/{id}")
     public Result<Void> deleteById(@PathVariable Integer id){
         productService.deleteById(id);
-        return Result.success(200003,"删除成功",null);
+        return Result.success(200,"删除成功",null);
     }
 
     /*
@@ -91,7 +91,7 @@ public class ProductController {
     @PostMapping("/add")
     public Result<Void> add(@RequestBody Product product){
         productService.add(product);
-        return Result.success(200003,"添加成功",null);
+        return Result.success(201,"添加成功",null);
     }
 
     /*
@@ -103,7 +103,7 @@ public class ProductController {
     @PutMapping("/update")
     public Result<Void> update(@RequestBody Product product){
         productService.update(product);
-        return Result.success(200003,"修改成功",null);
+        return Result.success(200,"修改成功",null);
     }
 }
 

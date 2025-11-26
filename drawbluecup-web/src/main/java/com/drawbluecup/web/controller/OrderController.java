@@ -40,7 +40,7 @@ public class OrderController {
     @GetMapping("/findAll")
     @Operation(summary = "查询所有订单", description = "返回所有订单列表")
     public Result<List<Order>> findOrderAll() {
-        return Result.success("查询成功",orderService.findOrderAll());
+        return Result.success(200,"查询成功",orderService.findOrderAll());
     }
 
 
@@ -52,7 +52,7 @@ public class OrderController {
             @Parameter(description = "用户 ID", required = true)
             @PathVariable Integer id){
 
-        return Result.success("查询成功",orderService.findUserWithOrders(id));
+        return Result.success(200,"查询成功",orderService.findUserWithOrders(id));
 
     }
 
@@ -66,7 +66,7 @@ public class OrderController {
     {
 
         orderService.addOrder(order);
-        return Result.success("新增该订单成功",null);
+        return Result.success(201,"新增该订单成功",null);
 
     }
 
@@ -80,7 +80,7 @@ public class OrderController {
     {
 
         orderService.deleteOrderAll();
-        return Result.success("删除所有订单成功",null);
+        return Result.success(200,"删除所有订单成功",null);
 
     }
 

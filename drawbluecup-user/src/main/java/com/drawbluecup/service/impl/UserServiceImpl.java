@@ -89,7 +89,7 @@ public  List<User> findAll() {
     public User findById(Integer id) {
         // 1. 校验参数：ID 不能为 null 或小于 1（非法 ID 直接抛异常）
         if (id == null || id <= 0) {
-            throw new BusinessException("查询失败：用户 ID 必须是正整数");
+            throw new BusinessException(400,"查询失败：用户 ID 必须是正整数");
         }
 
 
@@ -99,7 +99,7 @@ public  List<User> findAll() {
 
         // 3. 校验结果：如果查不到记录，抛异常提示
         if (user == null) {
-            throw new BusinessException("查询失败：ID 为 " + id + " 的用户不存在");
+            throw new BusinessException(404,"查询失败：ID 为 " + id + " 的用户不存在");
         }
 
         return user;
@@ -114,7 +114,7 @@ public  List<User> findAll() {
     @Override
     public User findByPhone(String phone) {
         if (phone == null || phone.isEmpty()) {
-            throw new BusinessException("查询失败：电话phone必须填");
+            throw new BusinessException(400,"查询失败：电话phone必须填");
         }
 
 
@@ -122,7 +122,7 @@ public  List<User> findAll() {
 
 
         if (user == null) {
-            throw new BusinessException("查询失败：phone 为 " + phone + " 的用户不存在");
+            throw new BusinessException(404,"查询失败：phone 为 " + phone + " 的用户不存在");
         }
 
         return user;
@@ -148,19 +148,19 @@ public  List<User> findAll() {
     public void addUser(User user) {
         // 1. 校验参数：user (整体)不能为 null，name 和 phone 不能为空
         if (user == null) {
-            throw new BusinessException("新增失败：用户信息不能为空");
+            throw new BusinessException(400,"新增失败：用户信息不能为空");
         }
         if (user.getName() == null || user.getName().trim().isEmpty()) {
-            throw new BusinessException("新增失败：用户名不能为空");
+            throw new BusinessException(400,"新增失败：用户名不能为空");
         }
         if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
-            throw new BusinessException("新增失败：手机号不能为空");
+            throw new BusinessException(400,"新增失败：手机号不能为空");
         }
 
         // 2. 检查手机号是否已存在//假设推断,如果手机号存在,就可以找到相应的用户,就是被占用;如果不存在,就找不到,就是null,就是还没有占用
         User existingUser = userMapper.findByPhone(user.getPhone());
         if (existingUser != null) {//如果不为NULL,说明通过手机号查到了用户,即代表该手机号已被占用
-            throw new BusinessException("新增失败：手机号 " + user.getPhone() + " 已被占用");
+            throw new BusinessException(400,"新增失败：手机号 " + user.getPhone() + " 已被占用");
         }
 
         // 3. 执行新增（调用 Mapper 的 add 方法）
@@ -177,13 +177,13 @@ public  List<User> findAll() {
     public void updateUser(User user) {
         // 1. 校验参数：user 和 id 不能为 null，name/phone 不能为空
         if (user == null || user.getId() == null) {
-            throw new BusinessException("修改失败：用户 ID 不能为空");
+            throw new BusinessException(400,"修改失败：用户 ID 不能为空");
         }
         if (user.getName() == null || user.getName().trim().isEmpty()) {
-            throw new BusinessException("修改失败：用户名不能为空");
+            throw new BusinessException(400,"修改失败：用户名不能为空");
         }
         if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
-            throw new BusinessException("修改失败：手机号不能为空");
+            throw new BusinessException(400,"修改失败：手机号不能为空");
         }
 
         // 2. 检查要修改的用户是否存在（调用上面的 findById 方法，复用校验逻辑）
@@ -194,7 +194,7 @@ public  List<User> findAll() {
         if (!Objects.equals(oldUser.getPhone(), user.getPhone())) {
             User existingUser = userMapper.findByPhone(user.getPhone());
             if (existingUser != null) {
-                throw new BusinessException("修改失败：手机号 " + user.getPhone() + " 已被占用");
+                throw new BusinessException(400,"修改失败：手机号 " + user.getPhone() + " 已被占用");
             }
         }
 

@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
         // 1. 先查用户基本信息（单表查询）
         User user = userMapper.findById(userId);
         if (user == null) {
-            throw new BusinessException("用户不存在");
+            throw new BusinessException(404,"用户不存在");
         }
 
         //2. 再查该用户的所有订单（多表关联的核心：通过用户ID查订单表）
@@ -74,27 +74,27 @@ public class OrderServiceImpl implements OrderService {
     public void addOrder(Order order) {
         //1.检验参数不为空
         if (order == null) {
-            throw new BusinessException("新增失败：订单信息不能为空");
+            throw new BusinessException(400,"新增失败：订单信息不能为空");
         }
         if (order.getOrderNo() == null|| order.getOrderNo().trim().isEmpty()) {
             //字符串类型，需要 trim()
-            throw new BusinessException("新增失败：订单编号不能为空");
+            throw new BusinessException(400,"新增失败：订单编号不能为空");
         }
 
         if (order.getUserId() == null|| order.getUserId()<=0) {
             //Integer 是数字类型，没有 trim() 方法
-            throw new BusinessException("新增失败：id数值并不合理");
+            throw new BusinessException(400,"新增失败：id数值并不合理");
         }//这是userId数值不合理的情况
 
         //2.检验订单号是否重复//假设推断,如果订单号存在,就可以找到相应的订单,就是被占用;如果不存在,就找不到,就是null,就是没有被占用
         Order existOrder = orderMapper.findByOrderNo(order.getOrderNo());
         if (existOrder != null) {
-            throw new BusinessException("新增失败：订单编号 " + order.getOrderNo() + " 已被占用");
+            throw new BusinessException(400,"新增失败：订单编号 " + order.getOrderNo() + " 已被占用");
         }
         //检验外键绑定用户,该用户是否存在
         User existUser = userMapper.findById(order.getUserId());
         if (existUser == null) {
-            throw new BusinessException("新增失败：id为 " + order.getUserId() + " 的用户不存在");
+            throw new BusinessException(404,"新增失败：id为 " + order.getUserId() + " 的用户不存在");
         }
         //3.到这里就可以安全执行命令了
         orderMapper.addOrder(order);
