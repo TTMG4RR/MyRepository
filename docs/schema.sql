@@ -63,3 +63,4 @@ CREATE TABLE favorite (
     CONSTRAINT fk_favorite_product FOREIGN KEY (product_id) REFERENCES product (id)
 ) COMMENT '用户收藏表（多对多）';
 
+

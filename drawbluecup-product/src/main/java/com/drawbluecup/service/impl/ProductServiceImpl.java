@@ -25,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     //查询
 
     //查询所有商品信息
+    @Override
     public List<Product> findAll(){
         //没有检验,如果没有查询到返回空列表
         return productMapper.findAll();
@@ -32,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //根据id查询商品
+    @Override
     public Product findById(Integer id){
         //检验id合法性:ID 不能为 null 或小于 1（非法 ID 直接抛异常）
         if (id == null || id <= 0) {
@@ -42,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //根据name查询商品
+    @Override
     public Product findByName(String name){
         //检验name合法性:name 不能为 null （非法  直接抛异常）
         if (name == null ) {
@@ -59,6 +62,7 @@ public class ProductServiceImpl implements ProductService {
 
     //删除
     //删除商品根据id
+    @Override
     public void deleteById(Integer id){
         //检验id合法性:ID 不能为 null 或小于 1（非法 ID 直接抛异常）
         if (id == null || id <= 0) {
@@ -68,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     //删除所有商品
+    @Override
     public void deleteAll(){
 
         productMapper.deleteAll();
@@ -78,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
 
     //新增
     //新增商品
+    @Override
     public void add(Product product){
         /*检验:
             1参数是否合理?整体为null?局部为null?id小于0?
@@ -109,6 +115,7 @@ public class ProductServiceImpl implements ProductService {
 
     //更新
     //更新商品(基于id查询来更新,并不能修改id)
+    @Override
     public void update(Product product){
 
 

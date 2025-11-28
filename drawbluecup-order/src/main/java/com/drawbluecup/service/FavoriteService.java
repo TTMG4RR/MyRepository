@@ -13,3 +13,4 @@ public interface FavoriteService {
     List<Favorite> listByUser(Integer userId);
 }
 
+

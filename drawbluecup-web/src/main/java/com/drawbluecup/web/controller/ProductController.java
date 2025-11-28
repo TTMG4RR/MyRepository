@@ -14,6 +14,7 @@ import java.util.List;
  * 作用：接收前端 HTTP 请求，调用 Service 处理，返回结果
  */
 @RestController  // 标记为 Controller，且所有方法返回 JSON 格式（替代 @Controller + @ResponseBody）
+                // 用 @RestController 写接口、返回 Java 对象，Spring 会**自动调用 Jackson** 帮你转成 JSON。
 @RequestMapping("/api/product")  // 所有接口的统一前缀
 //http://localhost:8080
 

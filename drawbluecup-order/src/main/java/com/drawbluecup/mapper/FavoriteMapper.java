@@ -18,3 +18,4 @@ public interface FavoriteMapper {
     int delete(@Param("userId") Integer userId, @Param("productId") Integer productId);
 }
 
+
