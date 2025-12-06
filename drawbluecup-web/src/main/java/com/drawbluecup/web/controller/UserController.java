@@ -8,6 +8,7 @@ import com.drawbluecup.service.UserService;
 import com.drawbluecup.validation.Phone;
 
 import com.github.pagehelper.PageInfo;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,9 @@ import java.util.List;
 @RestController  // 标记为 Controller，且所有方法返回 JSON 格式（替代 @Controller + @ResponseBody）
 @RequestMapping("/api/user")  // 所有接口的统一前缀（比如查询所有用户的接口路径是 /api/user/findAll）
 @Validated
+
+@Tag(name = "用户管理", description = "用户增删改查接口")
+
 public class UserController {
 
     // 注入 Service 层对象（通过 Spring 自动赋值，不用手动 new）

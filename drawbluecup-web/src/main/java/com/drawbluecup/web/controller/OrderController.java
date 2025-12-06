@@ -84,6 +84,65 @@ public class OrderController {
 
     }
 
+    /**
+     * 查询订单及其关联的商品列表（多对多关系）
+     * 接口路径：/api/order/{orderId}/products
+     * 请求方式：GET
+     * 功能：通过订单ID查询订单信息，并返回该订单包含的所有商品列表
+     * 
+     * @param orderId 订单ID（路径变量）
+     * @return 包含商品列表的订单对象
+     */
+    @GetMapping("/{orderId}/products")
+    @Operation(summary = "查询订单及其商品", description = "根据订单ID查询订单信息，并返回该订单包含的所有商品列表")
+    public Result<Order> findOrderWithProducts(
+            @Parameter(description = "订单ID", required = true)
+            @PathVariable Integer orderId) {
+        return Result.success(200, "查询成功", orderService.findOrderWithProducts(orderId));
+    }
+
+    /**
+     * 为订单添加商品（建立订单与商品的多对多关联）
+     * 接口路径：/api/order/{orderId}/products/{productId}
+     * 请求方式：POST
+     * 功能：将指定商品添加到指定订单中
+     * 
+     * @param orderId 订单ID（路径变量）
+     * @param productId 商品ID（路径变量）
+     * @return 操作结果
+     */
+    @PostMapping("/{orderId}/products/{productId}")
+    @Operation(summary = "为订单添加商品", description = "将指定商品添加到指定订单中，建立订单与商品的多对多关联")
+    public Result<Void> addProductToOrder(
+            @Parameter(description = "订单ID", required = true)
+            @PathVariable Integer orderId,
+            @Parameter(description = "商品ID", required = true)
+            @PathVariable Integer productId) {
+        orderService.addProductToOrder(orderId, productId);
+        return Result.success(200, "商品已添加到订单", null);
+    }
+
+    /**
+     * 从订单中移除商品（删除订单与商品的关联）
+     * 接口路径：/api/order/{orderId}/products/{productId}
+     * 请求方式：DELETE
+     * 功能：从指定订单中移除指定商品
+     * 
+     * @param orderId 订单ID（路径变量）
+     * @param productId 商品ID（路径变量）
+     * @return 操作结果
+     */
+    @DeleteMapping("/{orderId}/products/{productId}")
+    @Operation(summary = "从订单中移除商品", description = "从指定订单中移除指定商品，删除订单与商品的关联")
+    public Result<Void> removeProductFromOrder(
+            @Parameter(description = "订单ID", required = true)
+            @PathVariable Integer orderId,
+            @Parameter(description = "商品ID", required = true)
+            @PathVariable Integer productId) {
+        orderService.removeProductFromOrder(orderId, productId);
+        return Result.success(200, "商品已从订单中移除", null);
+    }
+
 
 
 

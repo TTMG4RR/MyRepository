@@ -1,13 +1,16 @@
 package com.drawbluecup.service.impl;
 
 import com.drawbluecup.entity.Order;
+import com.drawbluecup.entity.Product;
 import com.drawbluecup.entity.User;
 import com.drawbluecup.exception.BusinessException;
 import com.drawbluecup.mapper.OrderMapper;
+import com.drawbluecup.mapper.ProductMapper;
 import com.drawbluecup.mapper.UserMapper;
 import com.drawbluecup.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +25,8 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private ProductMapper productMapper;  // 注入商品 Mapper，用于校验商品是否存在
 
 
     /*
@@ -110,5 +115,128 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrderAll() {
         orderMapper.deleteOrderAll();
+    }
+
+    /**
+     * 查询订单及其关联的商品列表（多对多关系）
+     * 业务逻辑：
+     * 1. 校验订单ID是否合法
+     * 2. 调用 Mapper 的 JOIN 查询，一次性获取订单和商品信息
+     * 3. 如果订单不存在，抛出异常
+     * 
+     * @param orderId 订单ID
+     * @return 包含商品列表的订单对象
+     */
+    @Override
+    public Order findOrderWithProducts(Integer orderId) {
+        // 1. 校验订单ID是否合法
+        if (orderId == null || orderId <= 0) {
+            throw new BusinessException(400, "订单ID不合法");
+        }
+
+        // 2. 调用 Mapper 的 JOIN 查询
+        // 注意：这里使用 findOrderWithProducts 方法，它会自动通过 resultMap 组装商品列表
+        Order order = orderMapper.findOrderWithProducts(orderId);
+
+        // 3. 校验订单是否存在
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
+
+        return order;
+    }
+
+    /**
+     * 为订单添加商品（建立订单与商品的多对多关联）
+     * 业务逻辑：
+     * 1. 校验订单ID和商品ID是否合法
+     * 2. 检查订单是否存在
+     * 3. 检查商品是否存在
+     * 4. 检查商品是否已经在订单中（避免重复添加）
+     * 5. 向中间表 order_product 插入记录
+     * 
+     * @param orderId 订单ID
+     * @param productId 商品ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)  // 开启事务，确保数据一致性
+    public void addProductToOrder(Integer orderId, Integer productId) {
+        // 1. 校验参数
+        if (orderId == null || orderId <= 0) {
+            throw new BusinessException(400, "订单ID不合法");
+        }
+        if (productId == null || productId <= 0) {
+            throw new BusinessException(400, "商品ID不合法");
+        }
+
+        // 2. 检查订单是否存在
+        Order order = orderMapper.findByOrderId(orderId);
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
+
+        // 3. 检查商品是否存在
+        Product product = productMapper.findById(productId);
+        if (product == null) {
+            throw new BusinessException(404, "商品不存在");
+        }
+
+        // 4. 检查商品是否已经在订单中（避免重复添加）
+        // 思路：查询订单及其商品，如果商品列表包含该商品，说明已存在
+        Order orderWithProducts = orderMapper.findOrderWithProducts(orderId);
+        if (orderWithProducts.getProducts() != null) {
+            boolean exists = orderWithProducts.getProducts().stream()
+                    .anyMatch(p -> p.getId().equals(productId));
+            if (exists) {
+                throw new BusinessException(400, "商品已存在于订单中");
+            }
+        }
+
+        // 5. 向中间表插入记录
+        orderMapper.addProductToOrder(orderId, productId);
+    }
+
+    /**
+     * 从订单中移除商品（删除订单与商品的关联）
+     * 业务逻辑：
+     * 1. 校验订单ID和商品ID是否合法
+     * 2. 检查订单是否存在
+     * 3. 检查商品是否在订单中
+     * 4. 从中间表 order_product 删除记录
+     * 
+     * @param orderId 订单ID
+     * @param productId 商品ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)  // 开启事务
+    public void removeProductFromOrder(Integer orderId, Integer productId) {
+        // 1. 校验参数
+        if (orderId == null || orderId <= 0) {
+            throw new BusinessException(400, "订单ID不合法");
+        }
+        if (productId == null || productId <= 0) {
+            throw new BusinessException(400, "商品ID不合法");
+        }
+
+        // 2. 检查订单是否存在
+        Order order = orderMapper.findByOrderId(orderId);
+        if (order == null) {
+            throw new BusinessException(404, "订单不存在");
+        }
+
+        // 3. 检查商品是否在订单中
+        Order orderWithProducts = orderMapper.findOrderWithProducts(orderId);
+        if (orderWithProducts.getProducts() == null || orderWithProducts.getProducts().isEmpty()) {
+            throw new BusinessException(400, "订单中没有该商品");
+        }
+
+        boolean exists = orderWithProducts.getProducts().stream()
+                .anyMatch(p -> p.getId().equals(productId));
+        if (!exists) {
+            throw new BusinessException(400, "订单中没有该商品");
+        }
+
+        // 4. 从中间表删除记录
+        orderMapper.removeProductFromOrder(orderId, productId);
     }
 }

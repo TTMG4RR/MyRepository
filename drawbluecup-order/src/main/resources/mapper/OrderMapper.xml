@@ -2,6 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.drawbluecup.mapper.OrderMapper">
+    
+    <!-- 
+        结果映射：订单及其商品列表（多对多关系）
+        使用 <collection> 标签处理一对多关系（一个订单有多个商品）
+    -->
+    <resultMap id="OrderWithProducts" type="com.drawbluecup.entity.Order">
+        <!-- 订单基本信息映射 -->
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 
+            商品列表映射（一对多）
+            property="products"：Order 实体类中的 List<Product> products 字段
+            ofType="Product"：集合中元素的类型
+            column="id"：用于关联查询的列（订单ID）
+        -->
+        <collection property="products" ofType="com.drawbluecup.entity.Product">
+            <id property="id" column="p_id"/>
+            <result property="name" column="p_name"/>
+        </collection>
+    </resultMap>
+
+
+
     <select id="findByUserId" resultType="com.drawbluecup.entity.Order">
         <!--根据id(订单外键user_id)查询订单,由于外键多为重复性,所以一般在服务层搭配主表一起输出-->
         select * from `order` where user_id = #{userId}
@@ -24,6 +49,9 @@
     </select>
 
 
+
+
+
     <select
             id="findOrderAll"
             resultType="com.drawbluecup.entity.Order"
@@ -35,13 +63,52 @@
 
 
 
+
+
+    <!--
+        查询订单及其关联的商品列表（多对多 JOIN 查询）
+        核心思路：
+        1. 主表：order（订单表）
+        2. 中间表：order_product（订单商品关联表）
+        3. 关联表：product（商品表）
+        4. 使用 LEFT JOIN 确保即使订单没有商品也能查询到订单信息
+        5. 使用 resultMap="OrderWithProducts" 进行结果映射，自动组装商品列表
+    -->
+
+    <select id="findOrderWithProducts" resultMap="OrderWithProducts">
+        SELECT 
+            o.id,
+            o.order_no,
+            o.user_id,
+            o.create_time,
+            p.id AS p_id,        -- 商品ID，使用别名避免与订单ID冲突
+            p.name AS p_name    -- 商品名称，使用别名避免字段冲突
+        FROM `order` o
+        LEFT JOIN order_product op ON o.id = op.order_id    -- 通过中间表关联
+        LEFT JOIN product p ON op.product_id = p.id        -- 关联商品表
+        WHERE o.id = #{orderId}
+        ORDER BY o.id, p.id
+        <!--
+        先以order表为左表，生成所有订单的基础数据；
+        左连接order_product：给每个订单匹配对应的中间表记录（空订单补 NULL）；
+        左连接product：给每个中间表记录匹配对应的商品信息（中间表无记录则商品字段补 NULL）；
+        用 WHERE 过滤出 “指定订单 ID” 的行；
+        最后 SELECT 出需要的字段（并起别名），返回最终结果。
+        -->
+
+    </select>
+
+
+
+
+
+
     <delete
             id="deleteOrderAll"
     >
         <!--删除所有订单-->
         delete from `order`
     </delete>
-
 
     <insert id="addOrder"
             parameterType="com.drawbluecup.entity.Order"
@@ -50,6 +117,23 @@
         INSERT INTO `order` (order_no,user_id,create_time) values (#{orderNo}, #{userId},NOW())
     </insert>
 
+    <!--
+        为订单添加商品（向中间表插入记录）
+        实现订单与商品的多对多关联
+        注意：需要先检查订单和商品是否存在，这个检查在 Service 层完成
+    -->
+    <insert id="addProductToOrder">
+        INSERT INTO order_product (order_id, product_id)
+        VALUES (#{orderId}, #{productId})
+    </insert>
+
+    <!--
+        从订单中移除商品（从中间表删除记录）
+    -->
+    <delete id="removeProductFromOrder">
+        DELETE FROM order_product
+        WHERE order_id = #{orderId} AND product_id = #{productId}
+    </delete>
 
 </mapper>
 

@@ -3,6 +3,7 @@ package com.drawbluecup.web.controller;
 import com.drawbluecup.entity.Product;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,8 @@ import java.util.List;
                 // 用 @RestController 写接口、返回 Java 对象，Spring 会**自动调用 Jackson** 帮你转成 JSON。
 @RequestMapping("/api/product")  // 所有接口的统一前缀
 //http://localhost:8080
+
+@Tag(name = "产品管理", description = "产品增删改查接口")
 
 public class ProductController {
 

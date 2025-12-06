@@ -1,16 +1,32 @@
 package com.drawbluecup.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+/**
+ * 订单实体类
+ * 关系说明：
+ * - 与 User 表：多对一关系（一个订单属于一个用户，一个用户可以有多个订单）
+ * - 与 Product 表：多对多关系（一个订单可以包含多个商品，一个商品可以在多个订单中）
+ *   通过中间表 order_product 实现多对多关系
+ */
 public class Order {
     private Integer id;//主键自增
     private String orderNo;//订单编号.业务展示
     private Integer userId;//外键,与主表主键关联
 
-    //关联的用户对象（一对多中“多"的一方持有“一"的引用)
+    //关联的用户对象（一对多中"多"的一方持有"一"的引用)
     // 可选：直接关联用户对象（方便通过订单获取用户信息，如订单属于哪个用户）
-    private User user;//WIP
-    private LocalDateTime createTime;//WIP
+    private User user;
+    private LocalDateTime createTime;
+    
+    /**
+     * 订单关联的商品列表（多对多关系）
+     * 通过中间表 order_product 关联，一个订单可以包含多个商品
+     * 使用 List 是因为一个订单可以有多个商品（一对多）
+     * 注意：这个字段需要通过 JOIN 查询才能填充，单表查询时为空
+     */
+    private List<Product> products;
 
 
 
@@ -58,7 +74,21 @@ public class Order {
         this.createTime = createTime;
     }
 
+    /**
+     * 获取订单关联的商品列表
+     * @return 商品列表，如果订单没有商品则返回 null
+     */
+    public List<Product> getProducts() {
+        return products;
+    }
 
+    /**
+     * 设置订单关联的商品列表
+     * @param products 商品列表
+     */
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 }
 
 
