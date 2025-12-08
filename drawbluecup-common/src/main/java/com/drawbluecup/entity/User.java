@@ -15,6 +15,7 @@ import java.util.List;
 
 //实体层封装数据,用于存储,取出及使用
 //而Result层用于封装返回数据
+
 public class User {
 
     private Integer id ;

@@ -48,6 +48,8 @@ public class OrderController {
      *
      */
     @GetMapping("/findUserWithOrders/{id}")
+    @Operation(summary = "根据用户id查询用户以及所对应订单", description = "实现根据用户id查询用户以及所对应订单")
+
     public Result<User> findUserWithOrders(
             @Parameter(description = "用户 ID", required = true)
             @PathVariable Integer id){
@@ -62,6 +64,7 @@ public class OrderController {
      */
 
     @PostMapping("/add")
+    @Operation(summary = "新增商品", description = "不需要传输自增id")
     public Result<Void> addOrder(@RequestBody Order order)
     {
 
@@ -76,6 +79,7 @@ public class OrderController {
      * 前端想删除所有订单，通过这个接口删除数据库里的记录
      */
     @DeleteMapping("/deleteAll")
+    @Operation(summary = "删除所有订单(慎重)")
     public Result<Void> deleteOrderAll()
     {
 
@@ -111,8 +115,10 @@ public class OrderController {
      * @param productId 商品ID（路径变量）
      * @return 操作结果
      */
+
     @PostMapping("/{orderId}/products/{productId}")
     @Operation(summary = "为订单添加商品", description = "将指定商品添加到指定订单中，建立订单与商品的多对多关联")
+
     public Result<Void> addProductToOrder(
             @Parameter(description = "订单ID", required = true)
             @PathVariable Integer orderId,

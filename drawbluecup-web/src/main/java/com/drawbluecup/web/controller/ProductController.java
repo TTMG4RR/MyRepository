@@ -3,6 +3,7 @@ package com.drawbluecup.web.controller;
 import com.drawbluecup.entity.Product;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,7 @@ public class ProductController {
      * 无参数，返回商品列表
      */
     @GetMapping("/findAll")
+    @Operation(summary = "查询所有商品")
     public Result<List<Product>> findAll(){
     return Result.success(200,"查询成功" , productService.findAll());
     }
@@ -47,6 +49,7 @@ public class ProductController {
      * 参数id，返回商品列表
      */
     @GetMapping("/findById/{id}")
+    @Operation(summary = "根据id查询商品", description = "根据商品ID查询商品信息")
     public Result<Product> findById(@PathVariable Integer id){
         return Result.success(200,"查询成功" , productService.findById(id));
     }
@@ -58,6 +61,7 @@ public class ProductController {
      * 参数name，返回商品列表
      */
     @GetMapping("/findByName/{name}")
+    @Operation(summary = "根据name查询商品", description = "根据商品name查询商品信息")
     public Result<Product> findByName(@PathVariable String name){
         return Result.success(200,"查询成功" , productService.findByName(name));
     }
@@ -69,6 +73,7 @@ public class ProductController {
      * 无参数，无返回
      */
     @DeleteMapping("/deleteAll")
+    @Operation(summary = "删除所有商品（慎重）")
     public Result<Void> deleteAll(){
         productService.deleteAll();//不能写在下面,因为不返回值
         return Result.success(200,"删除所有商品成功",null);
@@ -80,7 +85,9 @@ public class ProductController {
      * 请求方式：Delete
      * 参数id，无返回
      */
+
     @DeleteMapping("/deleteById/{id}")
+    @Operation(summary = "基于id删除商品")
     public Result<Void> deleteById(@PathVariable Integer id){
         productService.deleteById(id);
         return Result.success(200,"删除成功",null);
@@ -93,6 +100,7 @@ public class ProductController {
      * 参数对象(不用包含id,自增)，无返回
      */
     @PostMapping("/add")
+    @Operation(summary = "新增商品", description = "不需要传输自增id")
     public Result<Void> add(@RequestBody Product product){
         productService.add(product);
         return Result.success(201,"添加成功",null);
@@ -105,6 +113,7 @@ public class ProductController {
      * 参数对象(其中包含id和其他字段,id用来定位,其他是修改)，无返回
      */
     @PutMapping("/update")
+    @Operation(summary = "基于id查询修改单个商品")
     public Result<Void> update(@RequestBody Product product){
         productService.update(product);
         return Result.success(200,"修改成功",null);

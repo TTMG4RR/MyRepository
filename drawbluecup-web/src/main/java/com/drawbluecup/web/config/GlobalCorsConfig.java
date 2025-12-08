@@ -17,7 +17,9 @@ public class GlobalCorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://127.0.0.1:5500")
+                        .allowedOrigins("http://127.0.0.1:5500")//npx http-server -p 5500
+                        // 127.0.0.1 是 本地回环地址（也叫 “localhost”）
+                        // 输入 http://localhost:5500 和 http://127.0.0.1:5500，效果一模一样
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("Content-Type", "Authorization")
                         .allowCredentials(true)

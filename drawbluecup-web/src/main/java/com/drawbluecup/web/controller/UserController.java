@@ -8,12 +8,14 @@ import com.drawbluecup.service.UserService;
 import com.drawbluecup.validation.Phone;
 
 import com.github.pagehelper.PageInfo;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,14 +40,16 @@ public class UserController {
     @Autowired
     private UserService userService;//依赖的是接口（UserService）而不是实现类
 
-    /*
+    /**
      * 查询所有用户
      * 接口路径：/api/user/findAll
      * 请求方式：GET
      * 无参数，返回用户列表
      */
 
-    @GetMapping("/findAll")  // 接收 GET 请求，子路径是 /findAll
+    @GetMapping("/findAll")// 接收 GET 请求，子路径是 /findAll
+    @Operation(summary = "查询所有用户", description = "查询所有用户以及和用户相关的数据")
+
     public Result<List<User>> findUserAll() {
         // 调用 Service 的 findAll() 方法，获取结果并返回给前端
         return Result.success(200,"查询成功",userService.findAll());
@@ -56,13 +60,14 @@ public class UserController {
 
 
 
-    /*
+    /**
      * 2.0实现“根据ID查询单个用户”功能
      * 业务逻辑：先校验ID是否合法，再查数据库，最后校验结果是否存在
      */
 
     //示例:http://localhost:8080/api/user/findById/6
     @GetMapping("/findById/{id}")
+    @Operation(summary = "根据ID查询单个用户")
     public Result<User> findById(@PathVariable Integer id){
 
             return Result.success(200,"查询成功",userService.findById(id));
@@ -71,12 +76,13 @@ public class UserController {
     }
 
 
-    /*
+    /**
      * 接口2.1实现“根据phone查询单个用户”功能
      * 业务逻辑：先校验phone是否合法，再查数据库，最后校验结果是否存在
      */
     //示例:http://localhost:8080/api/user/findByPhone/{phone}
     @GetMapping("/findByPhone/{phone}")
+    @Operation(summary = "根据phone查询单个用户")
     public Result<User> findByPhone(@PathVariable @Phone String phone){
             return Result.success(200,"查询成功",userService.findByPhone(phone));
 
@@ -92,6 +98,7 @@ public class UserController {
      *
      */
     @GetMapping("/query")
+    @Operation(summary = "条件模糊分页查询",description = "可以多个模糊条件组合查询，拥有分页功能")
     public Result<PageInfo<User>> queryUserByCondition(
             @RequestParam(required = false) String name,   // required=false：参数可选
             @RequestParam(required = false) String phone,
@@ -118,7 +125,7 @@ public class UserController {
 
     //示例:http://localhost:8080/api/user/add
     @PostMapping("/add")
-
+    @Operation(summary = "新增用户")
     // @RequestBody User user：把前端传来的JSON格式数据，自动转成User对象//接受前端
     // （比如前端传{"name":"张三","phone":"123"}，这里就会得到一个name=张三、phone=123的User对象）
 
@@ -143,6 +150,7 @@ public class UserController {
 
     //示例:http://localhost:8080/api/user/update
     @PutMapping("/update")
+    @Operation(summary = "基于id查询修改单个用户")
     //@RequestBody User user：接收前端传来的JsoN，转成User对象
     public Result<Void> updateUser(@Valid @RequestBody User user)
     {
@@ -165,6 +173,7 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     //通过路径来输入/接收
     //{id} 是路径变量，对应前端传递的用户ID（比如请求 /delete/1 表示删除ID=1的用户）
+    @Operation(summary = "基于id删除单个用户")
     public Result<Void> deleteUser(@PathVariable Integer id)
     {
             userService.deleteUser(id);
@@ -179,6 +188,7 @@ public class UserController {
      * 前端想删除所有用户，通过这个接口删除数据库里的记录
      */
     @DeleteMapping("/deleteUserAll")
+    @Operation(summary = "删除所有用户（慎重）")
     public Result<Void> deleteUserAll()
     {
 
