@@ -1,5 +1,8 @@
 package com.drawbluecup.web.controller;
 
+import com.drawbluecup.dto.product.ProductAddDTO;
+import com.drawbluecup.dto.product.ProductRespDTO;
+import com.drawbluecup.dto.product.ProductUpdateDTO;
 import com.drawbluecup.entity.Product;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.ProductService;
@@ -8,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,7 +25,7 @@ import java.util.List;
 //http://localhost:8080
 
 @Tag(name = "产品管理", description = "产品增删改查接口")
-
+//Swagger3.x 注解：生成 API 文档时，@Tag是接口分组名，@Operation是单个接口的描述
 public class ProductController {
 
 
@@ -38,8 +42,23 @@ public class ProductController {
      */
     @GetMapping("/findAll")
     @Operation(summary = "查询所有商品")
-    public Result<List<Product>> findAll(){
-    return Result.success(200,"查询成功" , productService.findAll());
+
+    public Result<List<ProductRespDTO>> findAll(){//实体转DTO
+
+        // 1. 调用Service获取所有Product实体类
+        List<Product> productList = productService.findAll();
+
+        // 2. 遍历转换：每个Product → ProductRespDTO
+        List<ProductRespDTO> respDTOList = new ArrayList<>();
+        for (Product product : productList) {
+            ProductRespDTO respDTO = new ProductRespDTO();
+            respDTO.setId(product.getId());
+            respDTO.setName(product.getName());
+            respDTOList.add(respDTO);
+        }
+
+        // 3. 返回DTO列表
+        return Result.success(200,"查询成功" , respDTOList);
     }
 
     /*
@@ -50,8 +69,19 @@ public class ProductController {
      */
     @GetMapping("/findById/{id}")
     @Operation(summary = "根据id查询商品", description = "根据商品ID查询商品信息")
-    public Result<Product> findById(@PathVariable Integer id){
-        return Result.success(200,"查询成功" , productService.findById(id));
+
+    public Result<ProductRespDTO> findById(@PathVariable Integer id){
+
+        // 1. 调用Service获取实体类（还是原来的逻辑，Service返回Product）
+        Product product = productService.findById(id);
+
+        // 2. 实体类转DTO（只赋值前端需要的id和name）
+        ProductRespDTO respDTO = new ProductRespDTO();
+        respDTO.setId(product.getId());
+        respDTO.setName(product.getName());
+
+        // 3. 返回DTO给前端（前端只看到id+name，看不到其他字段）
+        return Result.success(200,"查询成功",respDTO);
     }
 
     /*
@@ -93,6 +123,8 @@ public class ProductController {
         return Result.success(200,"删除成功",null);
     }
 
+
+
     /*
      * 2.1添加商品
      * 接口路径：/api/product/add
@@ -101,10 +133,18 @@ public class ProductController {
      */
     @PostMapping("/add")
     @Operation(summary = "新增商品", description = "不需要传输自增id")
-    public Result<Void> add(@RequestBody Product product){
+    public Result<Void> add(@RequestBody ProductAddDTO addDTO){ // 接收DTO，不再接收Product
+
+        // 关键：DTO转实体类（只赋值name字段）
+        Product product = new Product();
+        product.setName(addDTO.getName());// 手动赋值（你的场景字段少，不用BeanUtils）
+
+        //给服务层实体类
         productService.add(product);
         return Result.success(201,"添加成功",null);
     }
+
+
 
     /*
      * 3.1修改商品
@@ -113,8 +153,15 @@ public class ProductController {
      * 参数对象(其中包含id和其他字段,id用来定位,其他是修改)，无返回
      */
     @PutMapping("/update")
-    @Operation(summary = "基于id查询修改单个商品")
-    public Result<Void> update(@RequestBody Product product){
+    @Operation(summary = "基于id查询修改单个商品")//因为要用到id查询,增加DTO不适用了(本来也不应该混用😒)
+
+    public Result<Void> update(@RequestBody ProductUpdateDTO updateDTO){
+
+        //将前端DTO转换为实体类
+        Product product = new Product();
+        product.setId(updateDTO.getId());//一一赋值
+        product.setName(updateDTO.getName());
+
         productService.update(product);
         return Result.success(200,"修改成功",null);
     }
