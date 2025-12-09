@@ -2,6 +2,8 @@ package com.drawbluecup.web.controller;
 
 
 
+import com.drawbluecup.dto.user.UserAddDTO;
+import com.drawbluecup.dto.user.UserUpdateDTO;
 import com.drawbluecup.entity.User;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.UserService;
@@ -124,16 +126,20 @@ public class UserController {
     // POST类型请求通常用来“新增数据”，会往数据库里加新记录
 
     //示例:http://localhost:8080/api/user/add
+
+
     @PostMapping("/add")
     @Operation(summary = "新增用户")
     // @RequestBody User user：把前端传来的JSON格式数据，自动转成User对象//接受前端
-    // （比如前端传{"name":"张三","phone":"123"}，这里就会得到一个name=张三、phone=123的User对象）
 
-
-    public Result<Void> addUser (@Valid @RequestBody User user)
+    public Result<Void> addUser (@Valid @RequestBody UserAddDTO addDTO)
     {
-            userService.addUser(user);
-            return Result.success(201,"新增该用户成功",null);
+        User user = new User();
+        user.setPhone(addDTO.getPhone());
+        user.setName(addDTO.getName());
+
+        userService.addUser(user);
+        return Result.success(201,"新增该用户成功",null);
 
     }
 
@@ -152,8 +158,12 @@ public class UserController {
     @PutMapping("/update")
     @Operation(summary = "基于id查询修改单个用户")
     //@RequestBody User user：接收前端传来的JsoN，转成User对象
-    public Result<Void> updateUser(@Valid @RequestBody User user)
+    public Result<Void> updateUser(@Valid @RequestBody UserUpdateDTO updateDTO)
     {
+        User user = new User();
+        user.setPhone(updateDTO.getPhone());
+        user.setName(updateDTO.getName());
+        user.setId(updateDTO.getId());
 
             userService.updateUser(user);
             return Result.success(200,"修改该用户成功",null);

@@ -5,7 +5,7 @@ public class Result<T> {//给控制端作**返回对象**,从前端接收路径�
 
     //成员变量
     private int code;
-    private String msg;//提示信息
+    private String message;//提示信息
     private T data;//给前端的业务数据（查询/新增/修改后的实际数据，无数据时为null）// T是泛型，适配不同类型数据
 
 
@@ -16,15 +16,15 @@ public class Result<T> {//给控制端作**返回对象**,从前端接收路径�
     public Result() {
 
     }
-    public Result(int code, String msg, T data) {
+    public Result(int code, String message, T data) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
 
 
-
+//------------------------------------------------------------------------------------------
     //成员方法-success
 
     //无数据、固定提示：仅告知前端“操作成功”，无需返回业务数据
@@ -77,12 +77,12 @@ public class Result<T> {//给控制端作**返回对象**,从前端接收路径�
     private static <T> Result<T> build(int code, String message, T data){
         Result<T> result = new Result<>();
         result.setCode(code);
-        result.setMsg(message);
+        result.setMessage(message);
         result.setData(data);
         return result;
     }
 
-
+//------------------------------------------------------------------------------------------------------
 
     public int getCode() {
         return code;
@@ -90,19 +90,16 @@ public class Result<T> {//给控制端作**返回对象**,从前端接收路径�
     public void setCode(int code) {
         this.code = code;
     }
-    public String getMsg() {
-        return msg;
-    }
-    public void setMsg(String message) {
-        this.msg = message;
-    }
+    
+
 
     public String getMessage() {
-        return msg;
+        return message;
     }
     public void setMessage(String message) {
-        this.msg = message;
+        this.message = message;
     }
+    
     public T getData() {
         return data;
     }

@@ -24,8 +24,10 @@ import java.util.List;
 @RequestMapping("/api/product")  // 所有接口的统一前缀
 //http://localhost:8080
 
-@Tag(name = "产品管理", description = "产品增删改查接口")
+@Tag(name = "商品管理", description = "商品增删改查接口")
+
 //Swagger3.x 注解：生成 API 文档时，@Tag是接口分组名，@Operation是单个接口的描述
+
 public class ProductController {
 
 

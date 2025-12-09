@@ -25,12 +25,14 @@
         </collection>
     </resultMap>
 
+    <!--____________________________________________________________________________________________________________________-->
 
 
     <select id="findByUserId" resultType="com.drawbluecup.entity.Order">
         <!--根据id(订单外键user_id)查询订单,由于外键多为重复性,所以一般在服务层搭配主表一起输出-->
         select * from `order` where user_id = #{userId}
     </select>
+
 
     <select
             id="findByOrderNo"
@@ -39,6 +41,7 @@
         <!--根据订单编号(唯一性)查询订单-->
         SELECT * FROM `order` where order_no = #{orderNo}
     </select>
+
 
     <select
             id="findByOrderId"
@@ -100,6 +103,7 @@
 
 
 
+    <!--____________________________________________________________________________________________________________________-->
 
 
 
@@ -110,12 +114,21 @@
         delete from `order`
     </delete>
 
+
+
+
+    <!--____________________________________________________________________________________________________________________-->
+
+
+
+
     <insert id="addOrder"
             parameterType="com.drawbluecup.entity.Order"
     >
         <!--新增订单-->
         INSERT INTO `order` (order_no,user_id,create_time) values (#{orderNo}, #{userId},NOW())
     </insert>
+
 
     <!--
         为订单添加商品（向中间表插入记录）
@@ -126,6 +139,13 @@
         INSERT INTO order_product (order_id, product_id)
         VALUES (#{orderId}, #{productId})
     </insert>
+
+
+
+    <!--____________________________________________________________________________________________________________________-->
+
+
+
 
     <!--
         从订单中移除商品（从中间表删除记录）

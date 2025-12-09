@@ -1,6 +1,7 @@
 package com.drawbluecup.web.controller;
 
 
+import com.drawbluecup.dto.order.OrderAddDTO;
 import com.drawbluecup.entity.Order;
 import com.drawbluecup.entity.User;
 import com.drawbluecup.result.Result;
@@ -64,11 +65,15 @@ public class OrderController {
      */
 
     @PostMapping("/add")
-    @Operation(summary = "新增商品", description = "不需要传输自增id")
-    public Result<Void> addOrder(@RequestBody Order order)
+    @Operation(summary = "新增订单", description = "不需要传输自增id")
+    public Result<Void> addOrder(@RequestBody OrderAddDTO addDTO)
     {
+        Order order = new Order();
+        order.setOrderNo(addDTO.getOrderNo());
+        order.setUserId(addDTO.getUserId());
 
         orderService.addOrder(order);
+
         return Result.success(201,"新增该订单成功",null);
 
     }
