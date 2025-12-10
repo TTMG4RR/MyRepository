@@ -1,7 +1,7 @@
 package com.drawbluecup.web.controller;
 
 import com.drawbluecup.dto.product.ProductAddDTO;
-import com.drawbluecup.dto.product.ProductRespDTO;
+import com.drawbluecup.dto.product.ProductRespDTOWithout;
 import com.drawbluecup.dto.product.ProductUpdateDTO;
 import com.drawbluecup.entity.Product;
 import com.drawbluecup.result.Result;
@@ -45,15 +45,15 @@ public class ProductController {
     @GetMapping("/findAll")
     @Operation(summary = "查询所有商品")
 
-    public Result<List<ProductRespDTO>> findAll(){//实体转DTO
+    public Result<List<ProductRespDTOWithout>> findAll(){//实体转DTO
 
         // 1. 调用Service获取所有Product实体类
         List<Product> productList = productService.findAll();
 
         // 2. 遍历转换：每个Product → ProductRespDTO
-        List<ProductRespDTO> respDTOList = new ArrayList<>();
+        List<ProductRespDTOWithout> respDTOList = new ArrayList<>();
         for (Product product : productList) {
-            ProductRespDTO respDTO = new ProductRespDTO();
+            ProductRespDTOWithout respDTO = new ProductRespDTOWithout();
             respDTO.setId(product.getId());
             respDTO.setName(product.getName());
             respDTOList.add(respDTO);
@@ -72,13 +72,13 @@ public class ProductController {
     @GetMapping("/findById/{id}")
     @Operation(summary = "根据id查询商品", description = "根据商品ID查询商品信息")
 
-    public Result<ProductRespDTO> findById(@PathVariable Integer id){
+    public Result<ProductRespDTOWithout> findById(@PathVariable Integer id){
 
         // 1. 调用Service获取实体类（还是原来的逻辑，Service返回Product）
         Product product = productService.findById(id);
 
         // 2. 实体类转DTO（只赋值前端需要的id和name）
-        ProductRespDTO respDTO = new ProductRespDTO();
+        ProductRespDTOWithout respDTO = new ProductRespDTOWithout();
         respDTO.setId(product.getId());
         respDTO.setName(product.getName());
 

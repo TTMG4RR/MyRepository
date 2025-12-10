@@ -34,4 +34,8 @@ public interface UserService {
      * @return 分页结果（包含用户列表、总条数、总页数等）
      */
     PageInfo<User> queryUserByCondition(String name, String phone, LocalDateTime createTime, LocalDateTime updateTime, Integer pageNum, Integer pageSize);
+
+    User login(String phone, String password);//登录验证方法
+
+
 }

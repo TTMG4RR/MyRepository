@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Schema(name = "ProductRespDTO", description = "商品信息出参")// Swagger注解：文档里说明这个DTO的作用
 
-public class ProductRespDTO {
+public class ProductRespDTOWithout {
 
     @Schema(description = "商品ID")// 文档里标注字段说明
     private Integer id; // 前端需要看的id

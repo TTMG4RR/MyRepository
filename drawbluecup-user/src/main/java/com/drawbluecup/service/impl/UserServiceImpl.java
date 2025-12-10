@@ -250,8 +250,31 @@ public  List<User> findAll() {
         return new PageInfo<>(userList);
     }
 
+    //登录验证逻辑
+    @Override
+    public User login(String phone, String password) {
+        // 1. 校验参数
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new BusinessException(400, "登录失败：手机号不能为空");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new BusinessException(400, "登录失败：密码不能为空");
+        }
 
+        // 2. 查询用户（假设你的User表有password字段，实际需加密存储）
+        User user = userMapper.findByPhone(phone);
+        if (user == null) {
+            throw new BusinessException(401, "登录失败：手机号或密码错误");
+        }
 
+        // 3. 校验密码（生产环境需用BCrypt加密对比，这里模拟明文）
+        // 注意：实际项目中密码要加密存储，不能存明文！
+        if (!"123456".equals(password)) { // 临时模拟，需替换为真实密码校验
+            throw new BusinessException(401, "登录失败：手机号或密码错误");
+        }
+
+        return user;
+    }
 
 
 
