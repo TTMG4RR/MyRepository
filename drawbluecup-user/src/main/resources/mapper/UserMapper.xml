@@ -78,7 +78,7 @@
             parameterType="com.drawbluecup.entity.User"
     >
         <!--新增用户-->
-        INSERT INTO user (name, phone,create_time,update_time) values (#{name}, #{phone},NOW(), NOW())
+        INSERT INTO user (name, phone,create_time,update_time,password) values (#{name}, #{phone},NOW(), NOW(),#{password})
     </insert>
 
     <!--____________________________________________________________________________________________________________________-->
@@ -107,7 +107,7 @@
             parameterType="com.drawbluecup.entity.User"
     >
         <!--更新用户-->
-        update user set name=#{name},phone=#{phone},update_time=NOW()  where id = #{id}
+        update user set name=#{name},phone=#{phone},update_time=NOW(),password=#{password}  where id = #{id}
     </update>
 
 

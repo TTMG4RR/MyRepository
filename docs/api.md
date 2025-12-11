@@ -52,13 +52,6 @@ docs是项目中常用的 **“文档 / 示例文件目录”**
 | `/api/order/add` | POST | 新增订单 |
 | `/api/order/deleteAll` | DELETE | 清空订单 |
 
-## 收藏模块（多对多示例）
-
-| 接口 | 方法 | 描述 |
-| --- | --- | --- |
-| `/api/favorite` | POST | 新增收藏（userId + productId） |
-| `/api/favorite` | DELETE | 取消收藏（userId + productId） |
-| `/api/favorite/user/{userId}` | GET | 查询用户收藏的商品 |
 
 ## 跨域验证
 

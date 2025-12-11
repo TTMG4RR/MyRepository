@@ -16,14 +16,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-/*
+/**
  * UserService 接口的实现类，负责具体的业务逻辑处理
  * 服务层,持久层已经通过xml来构建方法,
  * 现在需要处理逻辑,在合适的时候执行方法,不合适的时候抛出异常附带信息
- *
- *
- *
  * 标注 @Service 让 Spring 容器管理这个类，后续可以被 Controller 注入使用
+ * //处理返回异常
  */
 @Service
 
@@ -156,6 +154,9 @@ public  List<User> findAll() {
         if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
             throw new BusinessException(400,"新增失败：手机号不能为空");
         }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new BusinessException(400,"新增失败：密码不能为空");
+        }
 
         // 2. 检查手机号是否已存在//假设推断,如果手机号存在,就可以找到相应的用户,就是被占用;如果不存在,就找不到,就是null,就是还没有占用
         User existingUser = userMapper.findByPhone(user.getPhone());
@@ -177,17 +178,24 @@ public  List<User> findAll() {
     public void updateUser(User user) {
         // 1. 校验参数：user 和 id 不能为 null，name/phone 不能为空
         if (user == null || user.getId() == null) {
-            throw new BusinessException(400,"修改失败：用户 ID 不能为空");
-        }
-        if (user.getName() == null || user.getName().trim().isEmpty()) {
-            throw new BusinessException(400,"修改失败：用户名不能为空");
-        }
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
-            throw new BusinessException(400,"修改失败：手机号不能为空");
+            throw new BusinessException(400,"修改失败：用户 ID 不能为空（无法定位)");
         }
 
+
         // 2. 检查要修改的用户是否存在（调用上面的 findById 方法，复用校验逻辑）
-        User oldUser = findById(user.getId()); // 如果不存在，会直接抛异常
+        User oldUser = findById(user.getId()); // 如果不存在，会直接抛异常,在findById处已处理
+
+        // 密码处理：不传密码则用原密码,下面同理
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            user.setPassword(oldUser.getPassword());
+        }
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            user.setName(oldUser.getName());
+        }
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+            user.setPhone(oldUser.getPhone());
+        }
+
 
         // 3. 检查新手机号是否被其他用户占用（如果手机号没变，不用检查）
         //如何查重?根据手机号看看能不能查到其他用户,如果能,就是重复,当然先排除查到之前的自己,所以先给这个方法加个if

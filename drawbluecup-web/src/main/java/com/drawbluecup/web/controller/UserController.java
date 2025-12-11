@@ -250,6 +250,7 @@ public class UserController {
         User user = new User();
         user.setPhone(addDTO.getPhone());
         user.setName(addDTO.getName());
+        user.setPassword(addDTO.getPassword());
 
         userService.addUser(user);
         return Result.success(201,"新增该用户成功",null);
@@ -277,6 +278,7 @@ public class UserController {
         user.setPhone(updateDTO.getPhone());
         user.setName(updateDTO.getName());
         user.setId(updateDTO.getId());
+        user.setPassword(updateDTO.getPassword());
 
             userService.updateUser(user);
             return Result.success(200,"修改该用户成功",null);

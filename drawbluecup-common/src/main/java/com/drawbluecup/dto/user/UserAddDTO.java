@@ -19,4 +19,8 @@ import lombok.Data;
         @Schema(description = "用户电话",required = true)
 
         private String phone;
+
+        @Schema(description = "用户密码",required = true)
+
+        private String password;
 }

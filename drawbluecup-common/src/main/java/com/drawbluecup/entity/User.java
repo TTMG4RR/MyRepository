@@ -9,92 +9,39 @@ mapper和xml一起来组成操控数据的方法,
  */
 
 import com.drawbluecup.validation.Phone;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 //实体层封装数据,用于存储,取出及使用
 //而Result层用于封装返回数据
-
+@Data
 public class User {
 
     private Integer id ;
     private String name;
     @Phone
     private String phone;
+    private String password;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     // 核心：一个用户有多个订单，用List<Order>存储
     private List<Order> orders;
-    // 多对多：收藏的商品列表
-    private List<Product> favoriteProducts;
 
     //构造方法
     public User() {
     }
 
-    public User(Integer id, String name, String phone) {
+    public User(Integer id, String name, String phone,String password) {
 
          this.id = id;
          this.name = name;
          this.phone = phone;
-       //待传入数据,时间使用now来填充,不需要传
+       //待传入数据,时间使用now来填充,不需要传(在mapper.xml)
     }
 
-    public Integer getId() {
-         return id;
-    }
-    public void setId(int id) {
-         this.id = id;
-    }
-
-
-    public String getName() {
-         return name;
-    }
-    public void setName(String name) {
-         this.name = name;
-    }
-
-
-    public String getPhone() {
-         return phone;
-    }
-    public void setPhone(String phone) {
-         this.phone = phone;
-    }
-
-
-    //但是这里createTime 和 updateTime 这两个时间字段必须添加 getter/setter 方法,因为:
-    //框架默认从getter和setter读取字段
-    public LocalDateTime getCreateTime() {
-         return createTime;
-    }
-    public void setCreateTime(LocalDateTime createTime) {
-         this.createTime = createTime;
-    }
-    public LocalDateTime getUpdateTime() {
-         return updateTime;
-    }
-    public void setUpdateTime(LocalDateTime updateTime) {
-         this.updateTime = updateTime;
-    }
-
-    public List<Order> getOrders() {
-         return orders;
-    }
-    public void setOrders(List<Order> orders) {
-         this.orders = orders;
-    }
-
-    public List<Product> getFavoriteProducts() {
-        return favoriteProducts;
-    }
-
-    public void setFavoriteProducts(List<Product> favoriteProducts) {
-        this.favoriteProducts = favoriteProducts;
-    }
-
+    //getter和setter由lombok简化
 
     @Override
     public String toString() {
