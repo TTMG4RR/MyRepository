@@ -22,6 +22,7 @@ public interface UserService {
     void updateUser(User user); // 修改（以后可加“记录存在校验”逻辑）
 
     User findById(Integer id); // 单条查询通过id
+    User findByIdWithPassword(Integer id);
     User findByPhone(String phone);// 单条查询phone
 
 
@@ -35,7 +36,7 @@ public interface UserService {
      */
     PageInfo<User> queryUserByCondition(String name, String phone, LocalDateTime createTime, LocalDateTime updateTime, Integer pageNum, Integer pageSize);
 
-    User login(String phone, String password);//登录验证方法
+    User login(Integer id, String password);//登录验证方法
 
 
 }

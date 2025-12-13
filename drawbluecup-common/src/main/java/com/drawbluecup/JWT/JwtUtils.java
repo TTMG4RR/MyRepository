@@ -1,6 +1,7 @@
 package com.drawbluecup.JWT;
 
 
+import com.drawbluecup.exception.BusinessException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey; // 临时兼容（JDK 17仍保留javax.crypto）
@@ -56,7 +57,7 @@ public class JwtUtils {
                     .parseClaimsJws(token) // 解析Token
                     .getBody(); // 获取Payload中的用户信息
         } catch (Exception e) {
-            throw new RuntimeException("Token无效或已过期：" + e.getMessage());
+            throw new BusinessException("Token无效或已过期：" + e.getMessage());//自定义异常BusinessException不要写错了
         }
     }
 }

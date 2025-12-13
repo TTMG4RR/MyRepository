@@ -127,8 +127,8 @@ public class UserController {
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "登录成功返回Access Token和Refresh Token")
     public Result<UserLoginRespDTO> login(@Valid @RequestBody UserLoginDTO loginDTO) {
-        // 1. 调用Service验证登录
-        User user = userService.login(loginDTO.getPhone(), loginDTO.getPassword());
+        // 1. 调用Service"验证"登录
+        User user = userService.login(loginDTO.getUserId(), loginDTO.getPassword());
 
         // 2. 组装用户信息，生成双Token
         Map<String, Object> userInfo = new HashMap<>();

@@ -6,27 +6,66 @@
 </head>
 <body>
 <h1>跨域请求示例🌵🌵🌵</h1>
+<button id="loginBtn">登录获取token🥳</button>
+<br><br>
 <button id="fetchBtn">获取所有用户列表😍</button>
 <pre id="result"></pre>
 
 <script>
-    document.getElementById('fetchBtn').addEventListener('click', () => {
-        fetch('http://localhost:8080/api/user/findAll', {
-            credentials: 'include'
-        })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-            })
-            .catch(err => {
-                document.getElementById('result').textContent = err.toString();
+    const baseUrl = 'http://localhost:8080/api/user';
+
+    // 登录逻辑
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        try {
+            const res = await fetch(`${baseUrl}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    userId: 8,//改完之后，后端和网页都要重新启动/刷新
+                    password: '123456'
+                })
             });
+
+            if (!res.ok) throw new Error(`HTTP错误：${res.status}`);
+            const data = await res.json();
+            console.log('登录响应：', data);
+
+            if (data.code === 200 && data.data?.accessToken) {
+                const token = data.data.accessToken;
+                localStorage.setItem('token', token);
+                document.getElementById('result').textContent = `✅ 登录成功！`;
+            } else {
+                document.getElementById('result').textContent = `❌ 登录失败：${data.message || '未知错误'}`;
+            }
+        } catch (err) {
+            document.getElementById('result').textContent = `❌ 登录出错：${err}`;
+        }
+    });
+
+    // 获取用户列表逻辑
+    document.getElementById('fetchBtn').addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            document.getElementById('result').textContent = '❌ 先登录！';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${baseUrl}/findAll`, {
+                credentials: 'include',
+                headers: {
+                    'Access-Token': token // 和拦截器/跨域配置一致
+                }
+            });
+
+            if (!res.ok) throw new Error(`HTTP错误：${res.status}`);
+            const data = await res.json();
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+            document.getElementById('result').textContent = `❌ 请求出错：${err}`;
+        }
     });
 </script>
 </body>
 </html>
-
-
-<!-- 不要点左上角,应该使用http-server-->
-
-

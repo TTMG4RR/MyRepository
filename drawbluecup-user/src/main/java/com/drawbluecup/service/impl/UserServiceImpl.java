@@ -69,39 +69,66 @@ public class UserServiceImpl implements UserService {
      * 业务逻辑：直接查询，无额外校验
      */
     @Override//要与接口一一对应
-public  List<User> findAll() {
+    public  List<User> findAll() {
     //调用 Mapper 的 findAll() 方法，获取数据库中所有用户
     List<User> userList = userMapper.findAll();
     // 如果查询结果为空，返回空列表（避免 null，方便前端处理）
     return userList != null ? userList : List.of();
-}
-
-
-
-/*
- * 2根据 ID 查询单个用户
- * 业务逻辑：查询前先检查 ID 非空(否则抛异常)，查询后判断记录是否存在
- */
-
-    @Override
-    public User findById(Integer id) {
-        // 1. 校验参数：ID 不能为 null 或小于 1（非法 ID 直接抛异常）
-        if (id == null || id <= 0) {
-            throw new BusinessException(400,"查询失败：用户 ID 必须是正整数");
-        }
-
-
-        // 2. 调用 Mapper 查询
-        User user = userMapper.findById(id);
-
-
-        // 3. 校验结果：如果查不到记录，抛异常提示
-        if (user == null) {
-            throw new BusinessException(404,"查询失败：ID 为 " + id + " 的用户不存在");
-        }
-
-        return user;
     }
+
+
+
+        /*
+        * 2根据 ID 查询单个用户
+        * 业务逻辑：查询前先检查 ID 非空(否则抛异常)，查询后判断记录是否存在
+        */
+
+        @Override
+        public User findById(Integer id) {
+            // 1. 校验参数：ID 不能为 null 或小于 1（非法 ID 直接抛异常）
+            if (id == null || id <= 0) {
+                throw new BusinessException(400,"查询失败：用户 ID 必须是正整数");
+            }
+
+            // 2. 调用 Mapper 查询
+            User user = userMapper.findById(id);
+
+            // 3. 校验结果：如果查不到记录，抛异常提示
+            if (user == null) {
+                throw new BusinessException(404,"查询失败：ID 为 " + id + " 的用户不存在");
+            }
+
+            return user;
+        }
+
+
+        /*
+         * 2.0根据 ID 查询单个用户(带密码)
+         * 业务逻辑：同上!
+         */
+
+            @Override
+            public User findByIdWithPassword(Integer id) {
+                // 1. 校验参数：ID 不能为 null 或小于 1（非法 ID 直接抛异常）
+                if (id == null || id <= 0) {
+                    throw new BusinessException(400,"查询失败：用户 ID 必须是正整数");
+                }
+
+                // 2. 调用 Mapper 查询
+                User user = userMapper.findByIdWithPassword(id);
+
+                // 3. 校验结果：如果查不到记录，抛异常提示
+                if (user == null) {
+                throw new BusinessException(404,"查询失败：ID 为 " + id + " 的用户不存在");
+                }
+
+                return user;
+                }
+
+
+
+
+
 
 
     /*
@@ -260,25 +287,25 @@ public  List<User> findAll() {
 
     //登录验证逻辑
     @Override
-    public User login(String phone, String password) {
-        // 1. 校验参数
-        if (phone == null || phone.trim().isEmpty()) {
-            throw new BusinessException(400, "登录失败：手机号不能为空");
+    public User login(Integer id, String password) {
+        // 1. 校验入参数非空
+        if (id == null ) {
+            throw new BusinessException(400, "登录失败：userId不能为空");
         }
         if (password == null || password.trim().isEmpty()) {
             throw new BusinessException(400, "登录失败：密码不能为空");
         }
 
-        // 2. 查询用户（假设你的User表有password字段，实际需加密存储）
-        User user = userMapper.findByPhone(phone);
+        // 2. 查询用户
+        User user = userMapper.findByIdWithPassword(id);//检验密码,需要查询用户和它对应的密码,使用findByIdWithPassword
         if (user == null) {
-            throw new BusinessException(401, "登录失败：手机号或密码错误");
+            throw new BusinessException(401, "登录失败：userId对应用户不存在");
         }
 
-        // 3. 校验密码（生产环境需用BCrypt加密对比，这里模拟明文）
+        // 3. 校验内部密码一致?（生产环境需用BCrypt加密对比，这里模拟明文）
         // 注意：实际项目中密码要加密存储，不能存明文！
-        if (!"123456".equals(password)) { // 临时模拟，需替换为真实密码校验
-            throw new BusinessException(401, "登录失败：手机号或密码错误");
+        if (!user.getPassword().equals(password)) { // 临时模拟，需替换为真实密码校验
+            throw new BusinessException(401, "登录失败：密码错误");
         }
 
         return user;

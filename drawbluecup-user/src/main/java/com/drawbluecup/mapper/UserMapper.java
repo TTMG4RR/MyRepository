@@ -49,13 +49,14 @@ public interface UserMapper  {
             @Param("createTime") LocalDateTime createTime,// 告诉 MyBatis：这个参数在 SQL 中叫 createTime
             @Param("updateTime") LocalDateTime updateTime// 告诉 MyBatis：这个参数在 SQL 中叫 updateTime
 
-//少了逗号的话，编译器会把 createTime 和 updateTime 当成一个参数处理，导致 “实际参数数量与方法定义不符”（原本定义 4 个参数，编译器会误认为是 3 个）。
+    //少了逗号的话，编译器会把 createTime 和 updateTime 当成一个参数处理，导致 “实际参数数量与方法定义不符”（原本定义 4 个参数，编译器会误认为是 3 个）。
     );
 
 
     //-------------------------------------局部数据-----------------------------------//
 
-    User findById(Integer id);//
+    User findById(Integer id);
+    User findByIdWithPassword(Integer id);
     User findByPhone(String phone);//
 
 }

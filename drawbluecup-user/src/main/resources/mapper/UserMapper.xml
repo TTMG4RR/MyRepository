@@ -14,13 +14,27 @@
     </select>
 
 
+
+
+
     <select
             id="findById"
             resultType="com.drawbluecup.entity.User"
     >
-        <!--根据id查询用户-->
+        <!--根据id查询用户,面向外部，不带密码-->
         SELECT id, name, phone,create_time,update_time FROM user where id = #{id}
     </select>
+
+   <select
+            id="findByIdWithPassword"
+            resultType="com.drawbluecup.entity.User"
+    >
+        <!--根据id查询用户,面向内部，带密码-->
+        SELECT id, name, phone,create_time,update_time,password FROM user where id = #{id}
+    </select>
+
+
+
 
 
     <select
