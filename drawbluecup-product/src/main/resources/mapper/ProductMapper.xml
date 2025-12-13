@@ -3,6 +3,25 @@
 
 <!-- 命名空间：必须等于ProductMapper接口的全类名（绑定接口） -->
 <mapper namespace="com.drawbluecup.mapper.ProductMapper">
+<!--
+    结果映射:商品及其订单列表
+    使用<collection>标签处理一对多关系(一个商品对应有多个订单)
+-->
+    <resultMap id="ProductWithOrdersResultMap" type="com.drawbluecup.entity.Product">
+        <!-- 商品表字段 -->
+        <id column="p_id" property="id"/>
+        <result column="p_name" property="name"/>
+        <result column="price" property="price"/>
+
+        <!-- 关联的订单列表（多对多） -->
+        <collection property="orders" ofType="com.drawbluecup.entity.Order">
+            <id column="order_id" property="id"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="user_id" property="userId"/>
+            <result column="create_time" property="createTime"/>
+        </collection>
+    </resultMap>
+
 
     <select
             id="findAll"
@@ -71,6 +90,25 @@
         update product set name=#{name}  where id = #{id}
     </update>
 
+
+
+    <!--
+        查询订单及其关联的商品列表（多对多 JOIN 查询）
+    -->
+    <select id="findProductWithOrders" resultMap="ProductWithOrdersResultMap">
+        SELECT
+        p.id AS p_id,
+        p.name AS p_name,
+        o.id AS order_id,
+        o.order_no,
+        o.user_id,
+        o.create_time
+        FROM product p
+        LEFT JOIN order_product op ON p.id = op.product_id
+        LEFT JOIN `order` o ON op.order_id = o.id
+        WHERE p.id = #{productId}
+        ORDER BY p.id, o.id
+    </select>
 
 
 

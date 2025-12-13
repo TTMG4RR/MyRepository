@@ -11,7 +11,7 @@ import java.util.List;
 
 //服务层实现类
 //服务层实现类来填充服务层接口的意义(帮助mapper处理业务逻辑)，然后控制层来调用服务层接口
-//不合理?直接抛异常🤪
+//不合理?直接抛异常
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
 
     //查询所有商品信息
     @Override
-    public List<Product> findAll(){
+    public List<Product> findAll() {
         //没有检验,如果没有查询到返回空列表
         return productMapper.findAll();
 
@@ -34,57 +34,70 @@ public class ProductServiceImpl implements ProductService {
 
     //根据id查询商品
     @Override
-    public Product findById(Integer id){
+    public Product findById(Integer id) {
         //检验id合法性:ID 不能为 null 或小于 1（非法 ID 直接抛异常）
         if (id == null || id <= 0) {
-            throw new BusinessException(400103,"输入id不可为空或小于0");
+            throw new BusinessException(400, "输入id不可为空或小于0");
         }
-        return productMapper.findById(id);
 
+        Product product = productMapper.findById(id);
+
+        // 3. 校验结果：如果查不到记录，抛异常提示
+        if (product == null) {
+            throw new BusinessException(404, "查询失败：ID 为 " + id + " 的商品不存在");
+        }
+
+        return product;
     }
 
     //根据name查询商品
     @Override
-    public Product findByName(String name){
+    public Product findByName(String name) {
         //检验name合法性:name 不能为 null （非法  直接抛异常）
-        if (name == null ) {
-            throw new BusinessException(400103,"输入name不可为空");
+        if (name == null) {
+            throw new BusinessException(400103, "输入name不可为空");
         }
-        return productMapper.findByName(name);
+        Product product = productMapper.findByName(name);
 
+        if (product == null) {
+            throw new BusinessException(404, "查询失败：name 为 " + name + " 的商品不存在");
+        }
+
+        return product;
     }
 
 
+//<======================================================================================>
 
     //以下增删改都是操作数据库,不应该返回数据(返回值为void)
-
 
 
     //删除
     //删除商品根据id
     @Override
-    public void deleteById(Integer id){
+    public void deleteById(Integer id) {
         //检验id合法性:ID 不能为 null 或小于 1（非法 ID 直接抛异常）
         if (id == null || id <= 0) {
-            throw new BusinessException(400103,"输入id不可为空或小于0");
+            throw new BusinessException(400, "输入id不可为空或小于0");
         }
         productMapper.deleteById(id);
     }
 
     //删除所有商品
     @Override
-    public void deleteAll(){
+    public void deleteAll() {
 
         productMapper.deleteAll();
     }
 
 
+//<======================================================================================>
 
 
     //新增
     //新增商品
     @Override
-    public void add(Product product){
+    public void add(Product product) {
         /*检验:
             1参数是否合理?整体为null?局部为null?id小于0?
             2新增对象里面字段是否可以重复?(商品名不可重复)
@@ -96,38 +109,39 @@ public class ProductServiceImpl implements ProductService {
 
         //1.
         if (product == null) {
-            throw new BusinessException(400103,"新增商品不可为空");
+            throw new BusinessException(400, "新增商品不可为空");
         }
         if (product.getName() == null) {
-            throw new BusinessException(400103,"新增商品的商品名不可为空");
+            throw new BusinessException(400, "新增商品的商品名不可为空");
         }
-
 
 
         //2.
-        if( productMapper.findByName(product.getName()) != null ){
-            throw new BusinessException(400303,"新增商品的商品名已存在");
+        if (productMapper.findByName(product.getName()) != null) {
+            throw new BusinessException(400, "新增商品的商品名已存在");
         }
 
         productMapper.add(product);
     }
 
+//<======================================================================================>
+
 
     //更新
     //更新商品(基于id查询来更新,并不能修改id)
     @Override
-    public void update(Product product){
+    public void update(Product product) {
 
 
         // 1. 检验ID的合法性
         if (product.getId() == null || product.getId() <= 0) {
-            throw new BusinessException(400103,"输入id不可为空或小于0");
+            throw new BusinessException(400, "输入id不可为空或小于0");
         }
 
         // 2. 先查询数据库，获取当前要更新的商品信息
         Product existingProduct = productMapper.findById(product.getId());//这里不会抛异常,因为调用的时mapper层的方法
         if (existingProduct == null) {
-            throw new BusinessException(400403,"要更新的商品不存在");
+            throw new BusinessException(404, "要更新的商品不存在");
         }
 
         // 3. 检查商品名称是否有变化。如果名称没变，就不需要进行重复校验!
@@ -136,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
             Product productWithSameName = productMapper.findByName(product.getName());
             if (productWithSameName != null) {
                 // 找到了一个使用新名称的商品，说明名称重复了
-                throw new BusinessException(400303,"修改商品的商品名已存在");
+                throw new BusinessException(400, "修改商品的商品名已存在");
             }
         }
 
@@ -144,7 +158,6 @@ public class ProductServiceImpl implements ProductService {
         productMapper.update(product);
 
         /*
-
         //检验id合理?
         if (product.getId() == null || product.getId() <= 0) {
             throw new BusinessException("输入id不可为空或小于0");
@@ -156,10 +169,27 @@ public class ProductServiceImpl implements ProductService {
         }
         productMapper.update(product);
 
-
-
          */
+
     }
 
+    //<======================================================================================>
+    @Override
+    public Product findProductWithOrders(Integer productId) {
+        // 1. 校验商品ID
+        if (productId == null || productId <= 0) {
+            throw new BusinessException(400, "商品ID不合法");
+        }
+
+        // 2. 调用Mapper的JOIN查询
+        Product product = productMapper.findProductWithOrders(productId);
+
+        // 3.商品存在？不存在就不要返回了
+        if (product == null) {
+            throw new BusinessException(404, "商品不存在");
+        }
+
+        return product;
+    }
 
 }

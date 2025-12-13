@@ -30,6 +30,7 @@ public interface OrderMapper {
     //增
     void addOrder(Order order); //添加订单
 
+//--------------------------------------------------------------------
     /**
      * 为订单添加商品（向中间表 order_product 插入记录）
      * 实现订单与商品的多对多关联
@@ -44,6 +45,7 @@ public interface OrderMapper {
      * @param productId 商品ID
      */
     void removeProductFromOrder(@Param("orderId") Integer orderId, @Param("productId") Integer productId);
+//--------------------------------------------------------------------
 
     //删
     void deleteOrderAll();      //删除所有订单

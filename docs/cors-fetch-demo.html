@@ -34,7 +34,8 @@
             if (data.code === 200 && data.data?.accessToken) {
                 const token = data.data.accessToken;
                 localStorage.setItem('token', token);
-                document.getElementById('result').textContent = `✅ 登录成功！`;
+                //localStorage是浏览器的本地存储（永久存储，除非手动删除），存进去后刷新页面重启浏览器都还在
+                document.getElementById('result').textContent = `✅ 登录成功！token已存储到本地`;
             } else {
                 document.getElementById('result').textContent = `❌ 登录失败：${data.message || '未知错误'}`;
             }
@@ -56,6 +57,7 @@
                 credentials: 'include',
                 headers: {
                     'Access-Token': token // 和拦截器/跨域配置一致
+                    // 手动把Token拼到请求头里
                 }
             });
 

@@ -22,6 +22,7 @@ public class GlobalCorsConfig {
                         // 输入 http://localhost:5500 和 http://127.0.0.1:5500，效果一模一样
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("Content-Type", "Authorization","Access-Token","Refresh-Token")
+                        //跨域配置是 “放行通道”，字段名是 “通道里的凭证”
                         .allowCredentials(true)
                         .maxAge(3600);
             }

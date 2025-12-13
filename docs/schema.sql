@@ -50,7 +50,11 @@ CREATE TABLE `order_product` (
   `order_id` int NOT NULL,
   `product_id` int NOT NULL,
   PRIMARY KEY (`order_id`,`product_id`),
+    -- 复合主键索引的 “最左匹配” 已覆盖order_id的所有查询，重复建索引无意义
   KEY `fk_order_product_product` (`product_id`),
+    -- 创建「索引」的简写（等价于 INDEX）
+    -- fk_order_product_product：是索引的自定义名称（命名规则：fk_表名_关联表名_字段名，便于识别）
+    -- (product_id)：表示索引作用在 order_product 表的 product_id 字段上
   CONSTRAINT `fk_order_product_order` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`),
   CONSTRAINT `fk_order_product_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单商品中间表(多对多关联)';

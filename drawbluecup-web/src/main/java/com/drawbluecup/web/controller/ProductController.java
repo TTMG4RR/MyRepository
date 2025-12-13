@@ -167,6 +167,14 @@ public class ProductController {
         productService.update(product);
         return Result.success(200,"修改成功",null);
     }
+
+    @GetMapping("/{productId}/orders")
+    @Operation(summary = "查询商品及其关联的订单", description = "根据商品ID查询商品信息，并返回包含该商品的所有订单列表")
+    public Result<Product> findProductWithOrders(@PathVariable Integer productId) {
+        return Result.success(200, "查询成功", productService.findProductWithOrders(productId));
+    }
+
+
 }
 
 //若有抛出异常,会被自动异常处理器接受

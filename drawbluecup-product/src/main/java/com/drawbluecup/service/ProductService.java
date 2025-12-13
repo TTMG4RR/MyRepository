@@ -13,6 +13,7 @@ public interface ProductService {
     void deleteAll();
     void add(Product product);
     void update(Product product);
+    public Product findProductWithOrders(Integer productId);
 
 
 

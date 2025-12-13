@@ -18,9 +18,6 @@ public class Order {
     private Integer id;//主键自增
     private String orderNo;//订单编号.业务展示
     private Integer userId;//外键,与主表主键关联
-
-    //关联的用户对象（一对多中"多"的一方持有"一"的引用)
-    // 可选：直接关联用户对象（方便通过订单获取用户信息，如订单属于哪个用户）
     private User user;
     private LocalDateTime createTime;
     
