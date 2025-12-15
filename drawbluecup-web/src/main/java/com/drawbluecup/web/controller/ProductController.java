@@ -1,11 +1,18 @@
 package com.drawbluecup.web.controller;
 
+import com.drawbluecup.convert.DTOConvertUtils;
+import com.drawbluecup.dto.order.OrderRespDTOWithUserAndProducts;
 import com.drawbluecup.dto.product.ProductAddDTO;
+import com.drawbluecup.dto.product.ProductRespDTOWithOrders;
 import com.drawbluecup.dto.product.ProductRespDTOWithout;
 import com.drawbluecup.dto.product.ProductUpdateDTO;
+import com.drawbluecup.dto.user.UserRespDTOWithout;
+import com.drawbluecup.entity.Order;
 import com.drawbluecup.entity.Product;
+import com.drawbluecup.entity.User;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.ProductService;
+import com.drawbluecup.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +31,7 @@ import java.util.List;
 @RequestMapping("/api/product")  // 所有接口的统一前缀
 //http://localhost:8080
 
-@Tag(name = "商品管理", description = "商品增删改查接口")
+@Tag(name = "商品Product管理", description = "商品增删改查接口")
 
 //Swagger3.x 注解：生成 API 文档时，@Tag是接口分组名，@Operation是单个接口的描述
 
@@ -34,6 +41,8 @@ public class ProductController {
     // 注入 Service 层对象（通过 Spring 自动赋值，不用手动 new）
     @Autowired
     private ProductService productService;//依赖的是接口（UserService）而不是实现类
+    @Autowired
+    private UserService userService;
 
 
     /*
@@ -94,8 +103,19 @@ public class ProductController {
      */
     @GetMapping("/findByName/{name}")
     @Operation(summary = "根据name查询商品", description = "根据商品name查询商品信息")
-    public Result<Product> findByName(@PathVariable String name){
-        return Result.success(200,"查询成功" , productService.findByName(name));
+    public Result<ProductRespDTOWithout> findByName(@PathVariable String name){
+
+        // 1. 调用Service获取实体类（还是原来的逻辑，Service返回Product）
+        Product product = productService.findByName(name);
+
+        // 2. 实体类转DTO（只赋值前端需要的id和name）
+        ProductRespDTOWithout respDTO = new ProductRespDTOWithout();
+        respDTO.setId(product.getId());
+        respDTO.setName(product.getName());
+
+        // 3. 返回DTO给前端（前端只看到id+name，看不到其他字段）
+        return Result.success(200,"查询成功",respDTO);
+
     }
 
     /*
@@ -168,10 +188,35 @@ public class ProductController {
         return Result.success(200,"修改成功",null);
     }
 
+
     @GetMapping("/{productId}/orders")
     @Operation(summary = "查询商品及其关联的订单", description = "根据商品ID查询商品信息，并返回包含该商品的所有订单列表")
-    public Result<Product> findProductWithOrders(@PathVariable Integer productId) {
-        return Result.success(200, "查询成功", productService.findProductWithOrders(productId));
+    public Result<ProductRespDTOWithOrders> findProductWithOrders(@PathVariable Integer productId) {
+
+        ProductRespDTOWithOrders productRespDTOWithOrders = new ProductRespDTOWithOrders();//总容器
+
+        Product productWithOrders =  productService.findProductWithOrders(productId);
+        //单独处理订单加用户
+        List<Order> Orders = productWithOrders.getOrders();//材料
+        List<OrderRespDTOWithUserAndProducts> OrderList = new ArrayList<>();//容器
+
+
+        for(Order order : Orders) {
+            User user = userService.findById(order.getUserId());
+
+            OrderList.add(DTOConvertUtils.convertOrderToDTO(order,user));//只传实体类
+        }
+
+
+        productRespDTOWithOrders.setOrders(OrderList);
+        productRespDTOWithOrders.setId(productId);
+        productRespDTOWithOrders.setName(productWithOrders.getName());
+
+
+
+
+        return Result.success(200, "查询成功", productRespDTOWithOrders);
+
     }
 
 

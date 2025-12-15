@@ -1,6 +1,7 @@
 package com.drawbluecup.service;
 
 import com.drawbluecup.entity.Order;
+import com.drawbluecup.entity.Product;
 import com.drawbluecup.entity.User;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface OrderService {
      * @param productId 商品ID
      */
     void removeProductFromOrder(Integer orderId, Integer productId);
+
+    List<Product> findProductsByOrderId(Integer id);
 }

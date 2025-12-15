@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -59,8 +60,12 @@ public class OrderServiceImpl implements OrderService {
         //2. 再查该用户的所有订单（多表关联的核心：通过用户ID查订单表）
         List<Order> orders = orderMapper.findByUserId(userId);
 
-        // 3. 将订单列表关联到用户对象中（组装数据）,将orders装进user里面一起返回,封装
-        user.setOrders(orders);//组装用setOrder,这是预设好的
+        // 新增：给每个订单查询关联商品
+        for (Order order : orders) {
+            List<Product> products = findProductsByOrderId(order.getId());
+            order.setProducts(products); // 给订单绑定商品
+        }
+        user.setOrders(orders);
 
         // 4. 返回包含订单的用户对象
         return user;
@@ -239,4 +244,13 @@ public class OrderServiceImpl implements OrderService {
         // 4. 从中间表删除记录
         orderMapper.removeProductFromOrder(orderId, productId);
     }
+
+    //根据订单id查询对应的商品
+    @Override
+    public List<Product> findProductsByOrderId(Integer orderId) {
+        // 调用Mapper的多对多查询方法
+        Order orderWithProducts = orderMapper.findOrderWithProducts(orderId);
+        return orderWithProducts.getProducts() == null ? Collections.emptyList() : orderWithProducts.getProducts();
+    }
+
 }

@@ -8,11 +8,11 @@ import lombok.Data;
  * 商品出参DTO：只包含前端需要展示的字段（比如id+name）
  */
 @Data
-@Schema(name = "ProductRespDTO", description = "商品信息出参")// Swagger注解：文档里说明这个DTO的作用
+@Schema(name = "ProductRespDTOWithout", description = "商品信息出参")// Swagger注解：文档里说明这个DTO的作用
 
 public class ProductRespDTOWithout {
 
-    @Schema(description = "商品ID")// 文档里标注字段说明
+    @Schema(description = "商品主键ID")// 文档里标注字段说明
     private Integer id; // 前端需要看的id
 
     @Schema(description = "商品名称")

@@ -17,10 +17,10 @@ public class Order {
     //成员变量
     private Integer id;//主键自增
     private String orderNo;//订单编号.业务展示
+    private LocalDateTime createTime;
+
     private Integer userId;//外键,与主表主键关联
     private User user;
-    private LocalDateTime createTime;
-    
     /**
      * 订单关联的商品列表（多对多关系）
      * 通过中间表 order_product 关联，一个订单可以包含多个商品

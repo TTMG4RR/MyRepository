@@ -172,7 +172,6 @@ public class ProductServiceImpl implements ProductService {
          */
 
     }
-
     //<======================================================================================>
     @Override
     public Product findProductWithOrders(Integer productId) {
