@@ -2,6 +2,7 @@ package com.drawbluecup.dto.user;
 
 //入参 DTO:前端传，只含需要的字段
 
+import com.drawbluecup.validation.Phone;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import lombok.Data;
         private String name; // 用户名
 
         @Schema(description = "用户电话",required = true)
-
+        @Phone
         private String phone;
 
         @Schema(description = "用户密码",required = true)

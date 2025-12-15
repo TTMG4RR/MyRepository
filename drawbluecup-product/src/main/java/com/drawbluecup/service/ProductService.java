@@ -1,12 +1,13 @@
 package com.drawbluecup.service;
 
 import com.drawbluecup.entity.Product;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> findAll();
+    PageInfo<Product> findAll(Integer pageNum, Integer pageSize);
     Product findById(Integer id);
     Product findByName(String name);
     void deleteById(Integer id);

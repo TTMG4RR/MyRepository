@@ -13,7 +13,7 @@ public interface UserService {
 
     // 对应 Mapper 的核心方法，加上业务相关的定义
 
-    List<User> findAll(); // 查全部用户
+    PageInfo<User> findAll(Integer pageNum, Integer pageSize); // 查全部用户
     void addUser(User user); // 新增（以后可加“手机号重复校验”逻辑）
 
     void deleteUser(Integer id); // 删除

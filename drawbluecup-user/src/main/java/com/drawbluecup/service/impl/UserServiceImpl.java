@@ -69,11 +69,18 @@ public class UserServiceImpl implements UserService {
      * 业务逻辑：直接查询，无额外校验
      */
     @Override//要与接口一一对应
-    public  List<User> findAll() {
-    //调用 Mapper 的 findAll() 方法，获取数据库中所有用户
-    List<User> userList = userMapper.findAll();
-    // 如果查询结果为空，返回空列表（避免 null，方便前端处理）
-    return userList != null ? userList : List.of();
+    public PageInfo<User> findAll(Integer pageNum, Integer pageSize) {
+        // 处理分页参数默认值
+        pageNum = pageNum == null ? 1 : pageNum;
+        pageSize = pageSize == null ? 10 : pageSize;
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+        //调用 Mapper 的 findAll() 方法，获取数据库中所有用户
+        List<User> userList = userMapper.findAll();
+        // 如果查询结果为空，返回空列表（避免 null，方便前端处理）
+        List<User> resultList = userList != null ? userList : List.of();
+        // 封装分页结果
+        return new PageInfo<>(resultList);
     }
 
 

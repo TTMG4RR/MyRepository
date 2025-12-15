@@ -4,6 +4,8 @@ import com.drawbluecup.entity.Product;
 import com.drawbluecup.exception.BusinessException;
 import com.drawbluecup.mapper.ProductMapper;
 import com.drawbluecup.service.ProductService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +28,18 @@ public class ProductServiceImpl implements ProductService {
 
     //查询所有商品信息
     @Override
-    public List<Product> findAll() {
-        //没有检验,如果没有查询到返回空列表
-        return productMapper.findAll();
-
+    public PageInfo<Product> findAll(Integer pageNum, Integer pageSize) {
+        // 处理分页参数默认值
+        pageNum = pageNum == null ? 1 : pageNum;
+        pageSize = pageSize == null ? 10 : pageSize;
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+        //调用 Mapper 的 findAll() 方法，获取数据库中所有商品
+        List<Product> productList = productMapper.findAll();
+        // 如果查询结果为空，返回空列表（避免 null，方便前端处理）
+        List<Product> resultList = productList != null ? productList : List.of();
+        // 封装分页结果
+        return new PageInfo<>(resultList);
     }
 
     //根据id查询商品

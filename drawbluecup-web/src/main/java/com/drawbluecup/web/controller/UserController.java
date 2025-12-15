@@ -60,24 +60,13 @@ public class UserController {
     @GetMapping("/findAll")// 接收 GET 请求，子路径是 /findAll
     @Operation(summary = "查询所有用户", description = "查询所有用户以及和用户相关的数据")
 
-    public Result<List<UserRespDTOWithout>> findUserAll() {
-        // 1. 调用Service获取所有User实体类
-        List<User> userList = userService.findAll();
+    public Result<PageInfo<User>> findUserAll(
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) {
+        // 1. 调用Service获取所有User实体类并分页
+        PageInfo<User> userPageInfo = userService.findAll(pageNum, pageSize);
 
-        // 2.设置出参DTO集合,由于收集DTO
-        List<UserRespDTOWithout> respDTOList = new ArrayList<>();
-
-        for (User user : userList) {
-            UserRespDTOWithout  userRespDTOWithout = new UserRespDTOWithout();
-            userRespDTOWithout.setId(user.getId());
-            userRespDTOWithout.setName(user.getName());
-            userRespDTOWithout.setPhone(user.getPhone());
-            userRespDTOWithout.setCreateTime(user.getCreateTime());
-            userRespDTOWithout.setUpdateTime(user.getUpdateTime());
-            respDTOList.add(userRespDTOWithout);
-        }
-
-        return Result.success(200,"查询成功",respDTOList);
+        return Result.success(200,"查询成功",userPageInfo);
 
 
     }

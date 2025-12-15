@@ -13,6 +13,7 @@ import com.drawbluecup.entity.User;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.ProductService;
 import com.drawbluecup.service.UserService;
+import com.github.pagehelper.PageInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,22 +55,15 @@ public class ProductController {
     @GetMapping("/findAll")
     @Operation(summary = "查询所有商品")
 
-    public Result<List<ProductRespDTOWithout>> findAll(){//实体转DTO
+    public Result<PageInfo<Product>> findAll(
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize){//实体转DTO
 
-        // 1. 调用Service获取所有Product实体类
-        List<Product> productList = productService.findAll();
+        // 1. 调用Service获取所有Product实体类并分页
+        PageInfo<Product> productPageInfo = productService.findAll(pageNum, pageSize);
 
-        // 2. 遍历转换：每个Product → ProductRespDTO
-        List<ProductRespDTOWithout> respDTOList = new ArrayList<>();
-        for (Product product : productList) {
-            ProductRespDTOWithout respDTO = new ProductRespDTOWithout();
-            respDTO.setId(product.getId());
-            respDTO.setName(product.getName());
-            respDTOList.add(respDTO);
-        }
-
-        // 3. 返回DTO列表
-        return Result.success(200,"查询成功" , respDTOList);
+        // 3. 返回分页结果
+        return Result.success(200,"查询成功" , productPageInfo);
     }
 
     /*

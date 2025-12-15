@@ -1,6 +1,7 @@
 package com.drawbluecup.dto.user;
 
 
+import com.drawbluecup.validation.Phone;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class UserUpdateDTO {
     private String name; // 用户名
 
     @Schema(description = "用户电话(不传则保留原值)", required = true)
-
+    @Phone
     private String phone;
 
     @Schema(description = "用户密码(不传则保留原值)", required = true)

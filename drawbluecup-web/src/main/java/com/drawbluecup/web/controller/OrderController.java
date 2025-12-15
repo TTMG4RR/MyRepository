@@ -13,6 +13,7 @@ import com.drawbluecup.entity.User;
 import com.drawbluecup.result.Result;
 import com.drawbluecup.service.OrderService;
 import com.drawbluecup.service.UserService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,15 +48,17 @@ public class OrderController {
      */
     @GetMapping("/findAll")
     @Operation(summary = "查询所有订单", description = "返回所有订单列表以及所属用户,包含商品,与user一对多,与product多对多")
-    public Result<List<OrderRespDTOWithUserAndProducts>> findOrderAll() {
-        // 1. 本质转移，获取所有待转对象
-        List<Order> orderList = orderService.findOrderAll();
+    public Result<PageInfo<OrderRespDTOWithUserAndProducts>> findOrderAll(
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) {
+        // 1. 调用Service获取所有Order实体类并分页
+        PageInfo<Order> orderPageInfo = orderService.findOrderAll(pageNum, pageSize);
 
         // 2.设置出参DTO集合(收纳容器的容器),由于收集DTO(结果)
         List<OrderRespDTOWithUserAndProducts> respDTOList = new ArrayList<>();
 
         //3.将待转对象一个个装进一个个新建容器,再逐个装进容器的容器
-        for (Order order : orderList) {
+        for (Order order : orderPageInfo.getList()) {
             OrderRespDTOWithUserAndProducts  orderRespDTOWith = new OrderRespDTOWithUserAndProducts();
 
             orderRespDTOWith.setId(order.getId());
@@ -98,7 +101,22 @@ public class OrderController {
             respDTOList.add(orderRespDTOWith);
         }
 
-        return Result.success(200,"查询成功",respDTOList);
+        // 创建新的PageInfo对象，仅设置必要的分页信息
+        PageInfo<OrderRespDTOWithUserAndProducts> respDTOPageInfo = new PageInfo<>();
+        respDTOPageInfo.setList(respDTOList);
+        respDTOPageInfo.setTotal(orderPageInfo.getTotal());
+        respDTOPageInfo.setPageNum(orderPageInfo.getPageNum());
+        respDTOPageInfo.setPageSize(orderPageInfo.getPageSize());
+        respDTOPageInfo.setPages(orderPageInfo.getPages());
+        respDTOPageInfo.setSize(respDTOList.size());
+        respDTOPageInfo.setNavigatePages(orderPageInfo.getNavigatePages());
+        respDTOPageInfo.setPrePage(orderPageInfo.getPrePage());
+        respDTOPageInfo.setNextPage(orderPageInfo.getNextPage());
+        respDTOPageInfo.setStartRow(orderPageInfo.getStartRow());
+        respDTOPageInfo.setEndRow(orderPageInfo.getEndRow());
+        // 注意：PageInfo的navigateFirstPage、navigateLastPage和navigatepageNums等属性是只读的，不能直接设置
+
+        return Result.success(200,"查询成功",respDTOPageInfo);
         //有时间要封装实体类转DTO
     }
 

@@ -8,6 +8,8 @@ import com.drawbluecup.mapper.OrderMapper;
 import com.drawbluecup.mapper.ProductMapper;
 import com.drawbluecup.mapper.UserMapper;
 import com.drawbluecup.service.OrderService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,13 +38,18 @@ public class OrderServiceImpl implements OrderService {
      * 业务逻辑：直接查询，无额外校验
      */
     @Override
-    public List<Order> findOrderAll() {
-
-        //调用 Mapper 的 findOrderAll() 方法，获取数据库中所有用户
+    public PageInfo<Order> findOrderAll(Integer pageNum, Integer pageSize) {
+        // 处理分页参数默认值
+        pageNum = pageNum == null ? 1 : pageNum;
+        pageSize = pageSize == null ? 10 : pageSize;
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+        //调用 Mapper 的 findOrderAll() 方法，获取数据库中所有订单
         List<Order> orderList = orderMapper.findOrderAll();
         // 如果查询结果为空，返回空列表（避免 null，方便前端处理）
-        return orderList != null ? orderList : List.of();
-
+        List<Order> resultList = orderList != null ? orderList : List.of();
+        // 封装分页结果
+        return new PageInfo<>(resultList);
     }
 
     /*2.2查询用户以及所对应的订单
