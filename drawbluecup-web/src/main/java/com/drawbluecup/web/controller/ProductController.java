@@ -55,15 +55,40 @@ public class ProductController {
     @GetMapping("/findAll")
     @Operation(summary = "查询所有商品")
 
-    public Result<PageInfo<Product>> findAll(
+    public Result<PageInfo<ProductRespDTOWithout>> findAll(
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize){//实体转DTO
 
         // 1. 调用Service获取所有Product实体类并分页
         PageInfo<Product> productPageInfo = productService.findAll(pageNum, pageSize);
 
-        // 3. 返回分页结果
-        return Result.success(200,"查询成功" , productPageInfo);
+        // 2. 设置出参DTO集合
+        List<ProductRespDTOWithout> respDTOList = new ArrayList<>();
+
+        // 3. 将实体类转换为DTO
+        for (Product product : productPageInfo.getList()) {
+            ProductRespDTOWithout respDTO = new ProductRespDTOWithout();
+            respDTO.setId(product.getId());
+            respDTO.setName(product.getName());
+            respDTOList.add(respDTO);
+        }
+
+        // 4. 创建新的PageInfo对象，设置分页信息和DTO列表
+        PageInfo<ProductRespDTOWithout> respDTOPageInfo = new PageInfo<>();
+        respDTOPageInfo.setList(respDTOList);
+        respDTOPageInfo.setTotal(productPageInfo.getTotal());
+        respDTOPageInfo.setPageNum(productPageInfo.getPageNum());
+        respDTOPageInfo.setPageSize(productPageInfo.getPageSize());
+        respDTOPageInfo.setPages(productPageInfo.getPages());
+        respDTOPageInfo.setSize(respDTOList.size());
+        respDTOPageInfo.setNavigatePages(productPageInfo.getNavigatePages());
+        respDTOPageInfo.setPrePage(productPageInfo.getPrePage());
+        respDTOPageInfo.setNextPage(productPageInfo.getNextPage());
+        respDTOPageInfo.setStartRow(productPageInfo.getStartRow());
+        respDTOPageInfo.setEndRow(productPageInfo.getEndRow());
+
+        // 5. 返回分页结果
+        return Result.success(200,"查询成功" , respDTOPageInfo);
     }
 
     /*

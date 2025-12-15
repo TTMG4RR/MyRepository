@@ -60,13 +60,41 @@ public class UserController {
     @GetMapping("/findAll")// 接收 GET 请求，子路径是 /findAll
     @Operation(summary = "查询所有用户", description = "查询所有用户以及和用户相关的数据")
 
-    public Result<PageInfo<User>> findUserAll(
+    public Result<PageInfo<UserRespDTOWithout>> findUserAll(
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {
         // 1. 调用Service获取所有User实体类并分页
         PageInfo<User> userPageInfo = userService.findAll(pageNum, pageSize);
 
-        return Result.success(200,"查询成功",userPageInfo);
+        // 2. 设置出参DTO集合
+        List<UserRespDTOWithout> respDTOList = new ArrayList<>();
+
+        // 3. 将实体类转换为DTO
+        for (User user : userPageInfo.getList()) {
+            UserRespDTOWithout respDTO = new UserRespDTOWithout();
+            respDTO.setId(user.getId());
+            respDTO.setName(user.getName());
+            respDTO.setPhone(user.getPhone());
+            respDTO.setCreateTime(user.getCreateTime());
+            respDTO.setUpdateTime(user.getUpdateTime());
+            respDTOList.add(respDTO);
+        }
+
+        // 4. 创建新的PageInfo对象，设置分页信息和DTO列表
+        PageInfo<UserRespDTOWithout> respDTOPageInfo = new PageInfo<>();
+        respDTOPageInfo.setList(respDTOList);
+        respDTOPageInfo.setTotal(userPageInfo.getTotal());
+        respDTOPageInfo.setPageNum(userPageInfo.getPageNum());
+        respDTOPageInfo.setPageSize(userPageInfo.getPageSize());
+        respDTOPageInfo.setPages(userPageInfo.getPages());
+        respDTOPageInfo.setSize(respDTOList.size());
+        respDTOPageInfo.setNavigatePages(userPageInfo.getNavigatePages());
+        respDTOPageInfo.setPrePage(userPageInfo.getPrePage());
+        respDTOPageInfo.setNextPage(userPageInfo.getNextPage());
+        respDTOPageInfo.setStartRow(userPageInfo.getStartRow());
+        respDTOPageInfo.setEndRow(userPageInfo.getEndRow());
+
+        return Result.success(200,"查询成功",respDTOPageInfo);
 
 
     }
